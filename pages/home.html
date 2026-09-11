@@ -36,12 +36,22 @@
         </div>
 
         <!-- Month Filter Capsule -->
-        <div>
-          <button class="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-full px-4 py-1.5 text-xs font-bold text-slate-800 shadow-sm hover:border-slate-300 transition">
-            <i class="far fa-calendar text-blue-600 text-sm"></i>
-            <span id="home-month-label">Tháng hiện tại</span>
-            <i class="fas fa-chevron-down text-[10px] text-slate-400 ml-0.5"></i>
+        <div class="space-y-2">
+          <div class="flex items-center gap-2">
+            <button id="home-month-prev" type="button" class="w-8 h-8 rounded-full bg-white border border-slate-200 text-slate-600 flex items-center justify-center text-sm shadow-sm hover:border-slate-300 transition disabled:opacity-40 disabled:cursor-not-allowed" aria-label="Tháng trước">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <select id="home-month-select" aria-label="Chọn tháng" class="inline-flex items-center justify-between gap-2 bg-white border border-slate-200 rounded-full px-4 py-1.5 text-xs font-bold text-slate-800 shadow-sm hover:border-slate-300 transition cursor-pointer min-w-[170px]">
+              <option value="">Tháng hiện tại</option>
+            </select>
+            <button id="home-month-next" type="button" class="w-8 h-8 rounded-full bg-white border border-slate-200 text-slate-600 flex items-center justify-center text-sm shadow-sm hover:border-slate-300 transition disabled:opacity-40 disabled:cursor-not-allowed" aria-label="Tháng sau">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+          <button id="home-current-month-button" type="button" class="text-[11px] font-semibold text-blue-600 hover:text-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+            Về tháng hiện tại
           </button>
+          <div id="home-loading-status" class="hidden text-[11px] font-medium text-blue-600">Đang tải dữ liệu...</div>
         </div>
 
         <!-- 2x2 Stat Cards Grid -->
