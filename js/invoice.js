@@ -17,6 +17,24 @@ function advanceOf(invoice) { return Number(invoice.advance_amount ?? invoice.ad
 function remainingOf(invoice) { return Math.max(0, totalOf(invoice) - advanceOf(invoice)); }
 function isPaid(invoice) { return remainingOf(invoice) === 0 && totalOf(invoice) > 0; }
 
+async function handleDeleteInvoice(id) {
+  const invoice = invoices.find(item => String(item.id) === String(id));
+  const invoiceLabel = invoice?.invoice_number || invoice?.code || invoice?.id || id;
+  if (!window.confirm(`Bạn có chắc muốn xóa hóa đơn ${invoiceLabel}? Dữ liệu đã xóa không thể khôi phục.`)) return;
+  try {
+    const { error: itemsError } = await supabase.from("invoice_items").delete().eq("invoice_id", id);
+    if (itemsError) throw itemsError;
+    const { error: invoiceError } = await supabase.from("invoices").delete().eq("id", id);
+    if (invoiceError) throw invoiceError;
+    await loadInvoices();
+    renderInvoicesPage();
+    showToast("Đã xóa hóa đơn.", "success");
+  } catch (error) {
+    console.error("Không thể xóa hóa đơn:", error);
+    showToast("Không thể xóa hóa đơn.", "error");
+  }
+}
+
 function renderInvoicesPage() {
   const container = document.getElementById("invoices-list-container");
   if (!container) return;
@@ -42,7 +60,7 @@ function renderInvoicesPage() {
   document.getElementById("stat-sub-paid") && (document.getElementById("stat-sub-paid").textContent = `${money(paid)} đ`);
   document.getElementById("stat-sub-remaining") && (document.getElementById("stat-sub-remaining").textContent = `${money(remaining)} đ`);
   if (!filtered.length) { container.innerHTML = `<div class="text-center py-12 text-slate-400"><i class="fas fa-file-invoice text-4xl mb-3 text-slate-300"></i><p class="text-xs">Chưa có hóa đơn</p></div>`; return; }
-  container.innerHTML = filtered.map(invoice => `<div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm mb-3.5"><div class="flex items-center justify-between mb-2"><span class="font-black text-slate-900 text-sm">${escapeHtml(invoice.code || invoice.id)}</span><span class="text-[11px] font-bold px-2 py-0.5 rounded-full ${isPaid(invoice) ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-600"}">${isPaid(invoice) ? "Đã thanh toán" : `Còn nợ ${money(remainingOf(invoice))} đ`}</span></div><h3 class="font-extrabold text-slate-900 text-base mb-0.5">${escapeHtml(invoice.client || invoice.customer_name || "Chưa có khách hàng")}</h3><p class="text-[11px] text-slate-400 mb-2.5">Lập ngày: ${escapeHtml(invoice.invoice_date || invoice.date || "")}</p><p class="text-xs text-slate-600 mb-3">${escapeHtml(invoice.description || invoice.desc || "")}</p><div class="grid grid-cols-3 gap-2 bg-slate-50 rounded-xl p-2.5 text-center text-xs mb-3"><div><span class="text-[10px] text-slate-400 block">Tổng tiền</span><span class="font-bold text-slate-800 text-[11px]">${money(totalOf(invoice))} đ</span></div><div><span class="text-[10px] text-slate-400 block">Đã thu</span><span class="font-bold text-emerald-600 text-[11px]">${money(Math.min(totalOf(invoice), advanceOf(invoice)))} đ</span></div><div><span class="text-[10px] text-slate-400 block">Còn lại</span><span class="font-bold text-slate-600 text-[11px]">${money(remainingOf(invoice))} đ</span></div></div><div class="flex items-center justify-end gap-2 pt-1 border-t border-slate-100 text-xs"><a href="invoice-detail.html?id=${encodeURIComponent(invoice.id)}" class="py-1.5 px-3 rounded-lg bg-blue-50 text-blue-700 font-bold">Xem chi tiết</a><a href="invoice-create.html?id=${encodeURIComponent(invoice.id)}" class="py-1.5 px-3 rounded-lg bg-slate-100 text-slate-700 font-bold">Sửa</a></div></div>`).join("");
+  container.innerHTML = filtered.map(invoice => `<div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm mb-3.5"><div class="flex items-center justify-between mb-2"><span class="font-black text-slate-900 text-sm">${escapeHtml(invoice.invoice_number || invoice.code || invoice.id)}</span><span class="text-[11px] font-bold px-2 py-0.5 rounded-full ${isPaid(invoice) ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-600"}">${isPaid(invoice) ? "Đã thanh toán" : `Còn nợ ${money(remainingOf(invoice))} đ`}</span></div><h3 class="font-extrabold text-slate-900 text-base mb-0.5">${escapeHtml(invoice.client || invoice.customer_name || "Chưa có khách hàng")}</h3><p class="text-[11px] text-slate-400 mb-2.5">Lập ngày: ${escapeHtml(invoice.invoice_date || invoice.date || "")}</p><p class="text-xs text-slate-600 mb-3">${escapeHtml(invoice.description || invoice.desc || "")}</p><div class="grid grid-cols-3 gap-2 bg-slate-50 rounded-xl p-2.5 text-center text-xs mb-3"><div><span class="text-[10px] text-slate-400 block">Tổng tiền</span><span class="font-bold text-slate-800 text-[11px]">${money(totalOf(invoice))} đ</span></div><div><span class="text-[10px] text-slate-400 block">Đã thu</span><span class="font-bold text-emerald-600 text-[11px]">${money(Math.min(totalOf(invoice), advanceOf(invoice)))} đ</span></div><div><span class="text-[10px] text-slate-400 block">Còn lại</span><span class="font-bold text-slate-600 text-[11px]">${money(remainingOf(invoice))} đ</span></div></div><div class="flex items-center justify-end gap-2 pt-1 border-t border-slate-100 text-xs"><a href="invoice-detail.html?id=${encodeURIComponent(invoice.id)}" class="py-1.5 px-3 rounded-lg bg-blue-50 text-blue-700 font-bold">Xem chi tiết</a><a href="invoice-create.html?id=${encodeURIComponent(invoice.id)}" class="py-1.5 px-3 rounded-lg bg-slate-100 text-slate-700 font-bold">Sửa</a><button type="button" onclick="handleDeleteInvoice('${escapeHtml(invoice.id)}')" class="py-1.5 px-3 rounded-lg bg-rose-50 text-rose-700 font-bold">Xóa hóa đơn</button></div></div>`).join("");
 }
 
 function recalculateCreateInvoice() {
@@ -59,7 +77,7 @@ async function handleSaveInvoice() {
   const id = invoiceId();
   const total = [...document.querySelectorAll(".item-july, .item-august")].reduce((sum, row) => sum + (Number(row.querySelector(".input-qty")?.value) || 0) * (Number(row.querySelector(".input-price")?.value) || 0), 0);
   const advance = document.getElementById("switch-advance")?.checked ? Number(document.getElementById("input-advance-amount")?.value) || 0 : 0;
-  const payload = { client, address: document.getElementById("cust-address")?.value || null, phone: document.getElementById("cust-phone")?.value || null, description: document.querySelector('input[value="Bảng chi tiết sửa chữa & gia công lắp đặt"]')?.value || null, total_amount: total, advance_amount: advance, remaining_amount: Math.max(0, total - advance), invoice_date: document.getElementById("cust-date")?.value || null, updated_at: new Date().toISOString() };
+  const payload = { title: document.getElementById("invoice-title")?.value.trim() || null, client, address: document.getElementById("cust-address")?.value || null, phone: document.getElementById("cust-phone")?.value || null, description: document.getElementById("invoice-description")?.value.trim() || null, total_amount: total, advance_amount: advance, remaining_amount: Math.max(0, total - advance), invoice_date: document.getElementById("cust-date")?.value || null, updated_at: new Date().toISOString() };
   try {
     const result = id ? await supabase.from("invoices").update(payload).eq("id", id).select().single() : await supabase.from("invoices").insert(payload).select().single();
     if (result.error) throw result.error;
@@ -101,8 +119,10 @@ async function loadInvoiceForm() {
   document.getElementById("cust-phone").value = invoice.phone || "";
   document.getElementById("cust-date").value = invoice.invoice_date || invoice.date || "";
   document.getElementById("invoice-code").textContent = invoice.code || invoice.id;
+  document.getElementById("invoice-title").value = invoice.title || "";
   document.getElementById("invoice-description").value = invoice.description || "";
   document.getElementById("input-advance-amount").value = invoice.advance_amount || 0;
+  document.querySelectorAll('a[href^="invoice-detail.html"]').forEach(link => { link.href = `invoice-detail.html?id=${encodeURIComponent(id)}`; });
   rows.forEach((row, index) => {
     const item = items?.[index];
     if (!item) return row.remove();
@@ -120,6 +140,7 @@ async function loadInvoiceForm() {
 window.renderInvoicesPage = renderInvoicesPage;
 window.recalculateCreateInvoice = recalculateCreateInvoice;
 window.handleSaveInvoice = handleSaveInvoice;
+window.handleDeleteInvoice = handleDeleteInvoice;
 window.loadInvoiceForm = loadInvoiceForm;
 window.setInvoiceFilter = (filter, element) => { window.currentInvoiceFilter = filter; document.querySelectorAll(".btn-inv-filter").forEach(button => button.classList.remove("bg-blue-600", "text-white")); element.classList.add("bg-blue-600", "text-white"); renderInvoicesPage(); };
 

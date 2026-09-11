@@ -39,7 +39,7 @@
           <div class="w-6 h-6 rounded-lg bg-blue-600 flex items-center justify-center text-white text-[11px] font-bold shadow-sm">
             <i class="fas fa-check"></i>
           </div>
-          <span class="font-bold text-slate-800 text-sm">Tao Hoa Don Moi</span>
+          <span class="font-bold text-slate-800 text-sm">Tạo Hóa Đơn Mới</span>
         </div>
         <a href="login.html" class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs shadow">
           <i class="fas fa-user"></i>
@@ -62,7 +62,7 @@
         </div>
 
         <!-- Attendance Integration Capsule -->
-        <button onclick="showToast('Đã đồng bộ 8 ngày công việc từ sổ Chấm công', 'info')" class="w-full bg-blue-50/80 border border-blue-200/90 rounded-2xl p-3 flex items-center justify-between text-xs font-bold text-blue-800 hover:bg-blue-100 transition shadow-sm">
+        <!-- <button onclick="showToast('Đã đồng bộ 8 ngày công việc từ sổ Chấm công', 'info')" class="w-full bg-blue-50/80 border border-blue-200/90 rounded-2xl p-3 flex items-center justify-between text-xs font-bold text-blue-800 hover:bg-blue-100 transition shadow-sm">
           <div class="flex items-center gap-2">
             <i class="far fa-clipboard text-blue-600 text-base"></i>
             <span>Lấy dữ liệu từ Chấm Công</span>
@@ -70,7 +70,7 @@
           <span class="bg-blue-200/70 text-blue-900 text-[11px] font-extrabold px-2.5 py-1 rounded-lg flex items-center gap-1">
             8 ngày có việc <i class="fas fa-chevron-down text-[9px]"></i>
           </span>
-        </button>
+        </button> -->
 
         <!-- CARD 1: Thông tin khách hàng -->
         <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.03)] space-y-3">
@@ -159,12 +159,12 @@
               </div>
               <div class="text-right">
                 <span class="text-[10px] text-slate-400 block">Tổng tháng 7</span>
-                <span id="display-july-total" class="font-black text-blue-600 text-xs">8.000.000 đ</span>
+                <span id="display-july-total" class="font-black text-blue-600 text-xs">0 đ</span>
               </div>
             </div>
 
             <!-- Item A1 -->
-            <div class="item-july bg-slate-50/80 rounded-xl p-3 border border-slate-200/80 space-y-2">
+            <div class="item-july bg-slate-50/80 rounded-xl p-3 border border-slate-200/80 space-y-2" style="display:none">
               <div class="flex items-center justify-between text-xs">
                 <span class="font-bold text-slate-700">A1 • 15/07/2026</span>
                 <button type="button" class="text-rose-500 hover:text-rose-700 p-1"><i class="far fa-trash-can"></i></button>
@@ -188,7 +188,7 @@
               <div class="flex items-center justify-between pt-1">
                 <div>
                   <span class="text-[10px] text-slate-500 block">Đơn giá</span>
-                  <input type="number" value="750000" oninput="recalculateCreateInvoice()" class="input-price w-24 bg-white border border-slate-200 rounded-lg p-1 text-xs font-bold text-slate-800"/>
+                  <input type="number" value="0" oninput="recalculateCreateInvoice()" class="input-price w-24 bg-white border border-slate-200 rounded-lg p-1 text-xs font-bold text-slate-800"/>
                 </div>
                 <div class="text-right">
                   <span class="text-[10px] text-slate-500 block">Thành tiền</span>
@@ -199,7 +199,7 @@
             </div>
 
             <!-- Item A2 -->
-            <div class="item-july bg-slate-50/80 rounded-xl p-3 border border-slate-200/80 space-y-2">
+            <div class="item-july bg-slate-50/80 rounded-xl p-3 border border-slate-200/80 space-y-2" style="display:none">
               <div class="flex items-center justify-between text-xs">
                 <span class="font-bold text-slate-700">A2 • 22/07/2026</span>
                 <button type="button" class="text-rose-500 hover:text-rose-700 p-1"><i class="far fa-trash-can"></i></button>
@@ -223,7 +223,7 @@
               <div class="flex items-center justify-between pt-1">
                 <div>
                   <span class="text-[10px] text-slate-500 block">Đơn giá</span>
-                  <input type="number" value="3625000" oninput="recalculateCreateInvoice()" class="input-price w-24 bg-white border border-slate-200 rounded-lg p-1 text-xs font-bold text-slate-800"/>
+                  <input type="number" value="0" oninput="recalculateCreateInvoice()" class="input-price w-24 bg-white border border-slate-200 rounded-lg p-1 text-xs font-bold text-slate-800"/>
                 </div>
                 <div class="text-right">
                   <span class="text-[10px] text-slate-500 block">Thành tiền</span>
@@ -248,12 +248,12 @@
               </div>
               <div class="text-right">
                 <span class="text-[10px] text-slate-400 block">Tổng tháng 8</span>
-                <span id="display-august-total" class="font-black text-blue-600 text-xs">20.688.000 đ</span>
+                <span id="display-august-total" class="font-black text-blue-600 text-xs">0 đ</span>
               </div>
             </div>
 
             <!-- Item A3 -->
-            <div class="item-august bg-slate-50/80 rounded-xl p-3 border border-slate-200/80 space-y-2">
+            <div class="item-august bg-slate-50/80 rounded-xl p-3 border border-slate-200/80 space-y-2" style="display:none">
               <div class="flex items-center justify-between text-xs">
                 <span class="font-bold text-slate-700">A3 • 05/08/2026</span>
                 <button type="button" class="text-rose-500 hover:text-rose-700 p-1"><i class="far fa-trash-can"></i></button>
@@ -274,7 +274,7 @@
               <div class="flex items-center justify-between pt-1">
                 <div>
                   <span class="text-[10px] text-slate-500 block">Đơn giá</span>
-                  <input type="number" value="15000000" oninput="recalculateCreateInvoice()" class="input-price w-28 bg-white border border-slate-200 rounded-lg p-1 text-xs font-bold text-slate-800"/>
+                  <input type="number" value="0" oninput="recalculateCreateInvoice()" class="input-price w-28 bg-white border border-slate-200 rounded-lg p-1 text-xs font-bold text-slate-800"/>
                 </div>
                 <div class="text-right">
                   <span class="text-[10px] text-slate-500 block">Thành tiền</span>
@@ -284,7 +284,7 @@
             </div>
 
             <!-- Item A4 -->
-            <div class="item-august bg-slate-50/80 rounded-xl p-3 border border-slate-200/80 space-y-2">
+            <div class="item-august bg-slate-50/80 rounded-xl p-3 border border-slate-200/80 space-y-2" style="display:none">
               <div class="flex items-center justify-between text-xs">
                 <span class="font-bold text-slate-700">A4 • 18/08/2026</span>
                 <button type="button" class="text-rose-500 hover:text-rose-700 p-1"><i class="far fa-trash-can"></i></button>
@@ -305,7 +305,7 @@
               <div class="flex items-center justify-between pt-1">
                 <div>
                   <span class="text-[10px] text-slate-500 block">Đơn giá</span>
-                  <input type="number" value="2844000" oninput="recalculateCreateInvoice()" class="input-price w-28 bg-white border border-slate-200 rounded-lg p-1 text-xs font-bold text-slate-800"/>
+                  <input type="number" value="0" oninput="recalculateCreateInvoice()" class="input-price w-28 bg-white border border-slate-200 rounded-lg p-1 text-xs font-bold text-slate-800"/>
                 </div>
                 <div class="text-right">
                   <span class="text-[10px] text-slate-500 block">Thành tiền</span>
@@ -385,7 +385,7 @@
       <!-- Bottom Fixed Action Bar -->
       <div class="action-bar-fixed absolute bottom-0 left-0 right-0 bg-white border-t border-slate-100 p-3 shadow-lg z-40">
         <div class="flex items-center gap-2 mb-2">
-          <a href="invoice-detail.html?id=hd-006" class="py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1.5 transition">
+          <a href="invoice-detail.html" class="py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1.5 transition">
             <i class="fas fa-file-lines"></i> Xem A4
           </a>
           <button onclick="handleSaveInvoice()" class="flex-1 py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-500/25 transition">
@@ -393,11 +393,11 @@
           </button>
         </div>
         <div class="flex items-center justify-center gap-4 text-[11px] text-slate-400 font-medium">
-          <a href="invoice-detail.html?id=hd-006&export=zalo" class="hover:text-blue-600 flex items-center gap-1">
+          <a href="invoice-detail.html" class="hover:text-blue-600 flex items-center gap-1">
             <i class="fas fa-share-nodes text-[10px]"></i> Xuất PDF gửi Zalo
           </a>
           <span>•</span>
-          <a href="invoice-detail.html?id=hd-006&print=true" class="hover:text-blue-600 flex items-center gap-1">
+          <a href="invoice-detail.html" class="hover:text-blue-600 flex items-center gap-1">
             <i class="fas fa-print text-[10px]"></i> In nhanh / Khổ A4
           </a>
         </div>
