@@ -3,18 +3,48 @@ import { supabase } from "./supabase.js";
 const money = value => new Intl.NumberFormat("vi-VN").format(Number(value) || 0);
 const escapeHtml = value => String(value ?? "").replace(/[&<>'"]/g, character => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[character]));
 
+let isDownloadingPdf = false;
+
+function currentInvoiceId() {
+  return new URLSearchParams(window.location.search).get("id");
+}
+
+async function fetchInvoiceItems(invoiceId) {
+  const ordered = await supabase
+    .from("invoice_items")
+    .select("*")
+    .eq("invoice_id", invoiceId)
+    .order("sort_order", { ascending: true });
+
+  if (!ordered.error) return Array.isArray(ordered.data) ? ordered.data : [];
+
+  console.error("[Invoice Detail] Invoice items query failed:", ordered.error);
+
+  const fallback = await supabase
+    .from("invoice_items")
+    .select("*")
+    .eq("invoice_id", invoiceId)
+    .order("created_at", { ascending: true });
+
+  if (fallback.error) throw fallback.error;
+  return Array.isArray(fallback.data) ? fallback.data : [];
+}
+
 async function loadInvoiceDetail() {
-  const id = new URLSearchParams(window.location.search).get("id");
+  const id = currentInvoiceId();
+  console.log("[Invoice Detail] Invoice ID:", id);
   const paper = document.querySelector(".a4-sheet");
   if (!paper) return;
   paper.innerHTML = `<div class="text-center py-16 text-slate-400 text-sm">Đang tải hóa đơn...</div>`;
   if (!id) { paper.innerHTML = `<div class="text-center py-16 text-slate-400">Chưa chọn hóa đơn.</div>`; return; }
-  const [{ data: invoice, error: invoiceError }, { data: items, error: itemsError }] = await Promise.all([
-    supabase.from("invoices").select("*").eq("id", id).single(),
-    supabase.from("invoice_items").select("*").eq("invoice_id", id).order("created_at")
-  ]);
-  if (invoiceError) throw invoiceError;
-  if (itemsError) throw itemsError;
+  const { data: invoice, error: invoiceError } = await supabase.from("invoices").select("*").eq("id", id).single();
+  if (invoiceError) {
+    console.error("[Invoice Detail] Invoice query failed:", invoiceError);
+    throw invoiceError;
+  }
+  const items = await fetchInvoiceItems(id);
+  console.log("[Invoice Detail] Invoice loaded:", invoice);
+  console.log("[Invoice Detail] Items loaded:", items);
   const total = Number(invoice.total_amount ?? invoice.totalAmount) || 0;
   const advance = Number(invoice.advance_amount ?? invoice.advanceAmount) || 0;
   const remaining = Math.max(0, total - advance);
@@ -24,7 +54,79 @@ async function loadInvoiceDetail() {
   editLinks.forEach(link => { link.href = `invoice-create.html?id=${encodeURIComponent(id)}`; });
 }
 
+function bindSaveInvoicePdfButton() {
+  const saveInvoiceButton = document.getElementById("save-invoice-pdf");
+  if (!saveInvoiceButton) {
+    console.error("[Invoice Detail] Missing #save-invoice-pdf button");
+    return;
+  }
+
+  console.log(
+    "[Invoice Detail] downloadInvoicePdf:",
+    typeof window.downloadInvoicePdf
+  );
+
+  saveInvoiceButton.addEventListener("click", async event => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (isDownloadingPdf) {
+      return;
+    }
+
+    isDownloadingPdf = true;
+    const originalText = saveInvoiceButton.innerHTML;
+
+    try {
+      saveInvoiceButton.disabled = true;
+      saveInvoiceButton.innerHTML = "Đang tạo PDF...";
+
+      console.log("[Invoice Detail] Start PDF download");
+
+      const invoiceId = currentInvoiceId();
+      if (!invoiceId) {
+        throw new Error("Không tìm thấy ID hóa đơn.");
+      }
+
+      const { data: invoice, error: invoiceError } = await supabase
+        .from("invoices")
+        .select("*")
+        .eq("id", invoiceId)
+        .single();
+
+      if (invoiceError) {
+        console.error("[Invoice Detail] Invoice query failed:", invoiceError);
+        throw invoiceError;
+      }
+
+      const items = await fetchInvoiceItems(invoiceId);
+
+      console.log("[Invoice Detail] Invoice:", invoice);
+      console.log("[Invoice Detail] Items:", items);
+
+      if (typeof window.downloadInvoicePdf !== "function") {
+        throw new Error("Không tìm thấy chức năng tạo PDF. Hãy kiểm tra invoice-pdf.js.");
+      }
+
+      await window.downloadInvoicePdf(invoice, Array.isArray(items) ? items : []);
+
+      console.log("[Invoice Detail] PDF download completed");
+    } catch (error) {
+      console.error("[Invoice Detail] PDF download failed:", error);
+      alert("Không thể lưu hóa đơn PDF.\n" + (error?.message || "Vui lòng thử lại."));
+    } finally {
+      isDownloadingPdf = false;
+      saveInvoiceButton.disabled = false;
+      saveInvoiceButton.innerHTML = originalText;
+    }
+  });
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
+  console.log("[Invoice Detail] Page loaded");
+  console.log("[Invoice Detail] Invoice ID:", currentInvoiceId());
+  console.log("[Invoice Detail] downloadInvoicePdf:", typeof window.downloadInvoicePdf);
+  bindSaveInvoicePdfButton();
   try { await loadInvoiceDetail(); }
   catch (error) { console.error("Không thể tải chi tiết hóa đơn:", error); const paper = document.querySelector(".a4-sheet"); if (paper) paper.innerHTML = `<div class="text-center py-16 text-rose-500 text-sm">Không thể tải hóa đơn.</div>`; }
 });

@@ -252,9 +252,8 @@
 
       <!-- Bottom Fixed Action Bar -->
       <div class="action-bar-fixed absolute bottom-0 left-0 right-0 bg-white border-t border-slate-100 p-3 shadow-lg z-40 flex items-center gap-2 no-print">
-        <button onclick="window.print()" class="flex-1 py-3 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-rose-500/20 transition">
-          <i class="far fa-file-pdf text-sm"></i>
-          <span>Xuất PDF A4</span>
+        <button type="button" id="save-invoice-pdf" class="flex-1 py-3 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-rose-500/20 transition">
+          <span>💾 Lưu hóa đơn</span>
         </button>
         <button onclick="showToast('Đang gửi thông tin hóa đơn tới khách hàng qua Zalo / SMS...', 'success')" class="flex-1 py-3 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 transition">
           <i class="fas fa-paper-plane text-sm"></i>
@@ -266,6 +265,8 @@
   </div> <!-- End device-wrapper -->
 
   <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="../js/invoice-pdf.js"></script>
   <script src="../js/common.js"></script>
   <script src="../js/supabase-config.js"></script>
   <script type="module" src="../js/invoice-detail.js"></script>
