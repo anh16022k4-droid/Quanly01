@@ -1,0 +1,236 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --primary-blue: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-light: #eff6ff;
+  --primary-border: #bfdbfe;
+  
+  --success-green: #16a34a;
+  --success-light: #dcfce7;
+  --success-text: #15803d;
+  
+  --danger-red: #dc2626;
+  --danger-light: #fee2e2;
+  --danger-text: #b91c1c;
+  
+  --bg-app: #f8fafc;
+  --card-bg: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: #0f172a;
+  color: var(--text-main);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Hide scrollbar for horizontal scroll chips */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Device Simulator Wrapper */
+.device-wrapper {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.device-wrapper.mobile-mode {
+  max-width: 420px;
+  width: 100%;
+  margin: 20px auto;
+  border-radius: 40px;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.6), 0 0 0 10px #1e293b, 0 0 0 12px #334155;
+  overflow: hidden;
+  height: calc(100vh - 40px);
+  max-height: 890px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.device-wrapper.responsive-mode {
+  max-width: 540px;
+  width: 100%;
+  margin: 0 auto;
+  min-height: 100vh;
+  box-shadow: 0 0 30px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Mobile Notch / Dynamic Island simulation */
+.mobile-notch {
+  display: none;
+}
+.mobile-mode .mobile-notch {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 26px;
+  background-color: #ffffff;
+  position: relative;
+  z-index: 50;
+  border-bottom: 1px solid rgba(241, 245, 249, 0.8);
+}
+.mobile-mode .notch-pill {
+  width: 105px;
+  height: 16px;
+  background: #0f172a;
+  border-radius: 20px;
+}
+
+/* App Main Container */
+.app-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8fafc;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+
+/* Content Area with scroll */
+.app-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 85px; /* space for bottom nav */
+  scroll-behavior: smooth;
+}
+
+/* Animation utilities */
+.screen-fade {
+  animation: fadeIn 0.22s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Bottom Sheet / Modal Animations */
+.modal-backdrop {
+  background-color: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  transition: opacity 0.25s ease;
+}
+
+.bottom-sheet {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.modal-hidden .bottom-sheet {
+  transform: translateY(100%);
+}
+
+/* Custom Checkbox & Radio Styles */
+.custom-checkbox {
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border: 2px solid #cbd5e1;
+  border-radius: 6px;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+}
+.custom-checkbox:checked {
+  background-color: var(--primary-blue);
+  border-color: var(--primary-blue);
+}
+.custom-checkbox:checked::after {
+  content: '✓';
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+  position: absolute;
+}
+
+/* Stat card hover & active touches */
+.card-touchable {
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.card-touchable:active {
+  transform: scale(0.985);
+}
+
+/* Bottom Nav bar */
+.bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #ffffff;
+  border-top: 1px solid #f1f5f9;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+  z-index: 40;
+}
+
+/* Active bottom nav indicator */
+.nav-item.active {
+  color: var(--primary-blue);
+}
+.nav-item.active .nav-icon {
+  color: var(--primary-blue);
+  transform: translateY(-1px);
+}
+
+/* Toast alert notification */
+#toast-notification {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translate(-50%, -100%);
+  opacity: 0;
+}
+#toast-notification.show {
+  transform: translate(-50%, 0);
+  opacity: 1;
+}
+

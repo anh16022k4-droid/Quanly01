@@ -1,0 +1,272 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --primary-blue: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-light: #eff6ff;
+  --primary-border: #bfdbfe;
+  
+  --success-green: #16a34a;
+  --success-light: #dcfce7;
+  --success-text: #15803d;
+  
+  --danger-red: #dc2626;
+  --danger-light: #fee2e2;
+  --danger-text: #b91c1c;
+  
+  --bg-app: #f8fafc;
+  --card-bg: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --bottom-nav-space: 112px;
+  --bottom-nav-height: 70px;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Hide scrollbar for horizontal scroll chips */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* App viewport without simulated device chrome */
+.device-wrapper {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+  height: 100vh;
+  max-height: none;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-app);
+}
+
+/* No simulated notch or device controls */
+.mobile-notch {
+  display: none;
+}
+
+/* App Main Container */
+.app-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8fafc;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  min-height: 0;
+}
+
+/* Content Area with scroll */
+.app-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: calc(var(--bottom-nav-space) + env(safe-area-inset-bottom)) !important;
+  scroll-behavior: smooth;
+}
+
+/* Page with bottom fixed actions */
+.app-scroll-area.has-action-bar {
+  padding-bottom: calc(var(--bottom-nav-space) + 32px + env(safe-area-inset-bottom)) !important;
+}
+
+/* Animation utilities */
+.page-fade {
+  animation: fadeIn 0.22s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Bottom Nav bar */
+.bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  right: auto;
+  width: 100vw;
+  transform: translateX(-50%);
+  background-color: #ffffff;
+  border-top: 1px solid #f1f5f9;
+  box-shadow: 0 -6px 16px rgba(15, 23, 42, 0.08);
+  z-index: 40;
+  min-height: var(--bottom-nav-height);
+  padding-bottom: max(10px, env(safe-area-inset-bottom));
+}
+
+/* Keep page actions visible above the fixed bottom navigation. */
+.action-bar-fixed {
+  bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom)) !important;
+  z-index: 45 !important;
+}
+
+.nav-item.active {
+  color: var(--primary-blue);
+}
+.nav-item.active .nav-icon {
+  color: var(--primary-blue);
+  transform: translateY(-1px);
+}
+
+/* Toast alert notification */
+#toast-notification {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translate(-50%, -100%);
+  opacity: 0;
+}
+#toast-notification.show {
+  transform: translate(-50%, 0);
+  opacity: 1;
+}
+
+/* Calendar bottom-sheet slide up animation */
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.animate-slideUp {
+  animation: slideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Day cell square for calendar grid */
+#cal-days-grid > div {
+  min-height: 36px;
+}
+
+#monthly-print-area {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 10mm;
+  }
+
+  body:has(#monthly-print-area) > *:not(#monthly-print-area) {
+    display: none !important;
+  }
+
+  #monthly-print-area {
+    display: block !important;
+    color: #111111;
+    font-family: "Times New Roman", Times, serif !important;
+    font-size: 13pt;
+    line-height: 1.4;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  #monthly-print-area h1,
+  #monthly-print-area h2,
+  #monthly-print-area p {
+    font-family: "Times New Roman", Times, serif !important;
+    text-align: center;
+  }
+
+  #monthly-print-area h1 {
+    font-size: 20pt;
+    margin: 0 0 4pt;
+  }
+
+  #monthly-print-area p {
+    margin: 0 0 12pt;
+  }
+
+  #monthly-print-area table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-family: "Times New Roman", Times, serif !important;
+  }
+
+  #monthly-print-area th,
+  #monthly-print-area td {
+    border: 1px solid #555555;
+    padding: 5pt 4pt;
+    font-size: 13pt;
+    overflow-wrap: anywhere;
+    vertical-align: top;
+  }
+
+  #monthly-print-area th {
+    background: #2563eb;
+    color: #ffffff;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  #monthly-print-area .print-summary-gap {
+    height: 39pt;
+  }
+
+  #monthly-print-area h2,
+  #monthly-print-area strong {
+    font-size: 13pt;
+    line-height: 1.4;
+  }
+
+  #monthly-print-area td:nth-child(1),
+  #monthly-print-area td:nth-child(2),
+  #monthly-print-area td:nth-child(3) {
+    text-align: center;
+  }
+
+  #monthly-print-area td.work.worked {
+    background: #dbf2ff;
+  }
+
+  #monthly-print-area .income {
+    color: #008000;
+  }
+
+  #monthly-print-area .expense {
+    color: #c00000;
+  }
+}

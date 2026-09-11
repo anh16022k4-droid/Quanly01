@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Quản Lý Hóa Đơn & Công Nợ - Quản Lý Công Việc</title>
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../css/common.css"/>
+  <link rel="stylesheet" href="../css/components.css"/>
+  <link rel="stylesheet" href="../css/invoice.css"/>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex items-center justify-center p-0">
+
+  <!-- Mobile Device Shell Wrapper -->
+  <div class="device-wrapper">
+    <div class="app-container">
+      <div class="app-scroll-area p-4 space-y-4">
+        
+        <!-- Header Bar -->
+        <div class="flex items-center justify-between pt-1">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+              <i class="fas fa-check"></i>
+            </div>
+            <div>
+              <h1 class="text-base font-extrabold text-slate-900 leading-tight">Quản lý Hóa đơn</h1>
+              <p class="text-[11px] text-slate-500 font-medium">Hóa đơn & Công nợ</p>
+            </div>
+          </div>
+
+          <!-- User Group & Notification -->
+          <div class="flex items-center gap-2.5">
+            <!-- <div class="flex -space-x-1.5 overflow-hidden">
+              <span class="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-blue-600 text-white text-[9px] font-bold flex items-center justify-center">AN</span>
+              <span class="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-emerald-600 text-white text-[9px] font-bold flex items-center justify-center">B1</span>
+              <span class="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-slate-400 text-white text-[8px] font-bold flex items-center justify-center">+2</span>
+            </div>
+            <button class="relative p-1.5 text-slate-600 hover:text-slate-900">
+              <i class="far fa-bell text-base"></i>
+              <span class="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full"></span>
+            </button> -->
+            <a href="login.html" class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs shadow">
+              <i class="fas fa-user"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Title & Create Button Row -->
+        <div class="flex items-center justify-between pt-1">
+          <div>
+            <h2 class="text-xl font-black text-slate-900 leading-tight">Hóa đơn</h2>
+            <p class="text-xs text-slate-500">Sổ quản lý & đối soát công nợ</p>
+          </div>
+          <a href="invoice-create.html" class="bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white text-xs font-bold py-2.5 px-3.5 rounded-xl flex items-center gap-1.5 shadow-md shadow-blue-500/20 transition">
+            <i class="far fa-plus-square text-sm"></i>
+            <span>Tạo hóa đơn</span>
+          </a>
+        </div>
+
+        <!-- 3 Metrics Cards (Tổng tiền, Đã thu, Còn lại) -->
+        <div class="grid grid-cols-3 gap-2">
+          <!-- Card 1: Tổng tiền -->
+          <div class="bg-blue-50/50 rounded-2xl p-3 border border-blue-100 flex flex-col justify-between">
+            <div class="flex items-center gap-1.5 text-slate-600 text-[11px] font-semibold mb-1">
+              <i class="fas fa-calculator text-blue-600 text-xs"></i>
+              <span>Tổng tiền</span>
+            </div>
+            <div>
+              <div id="stat-total-money" class="text-base font-black text-slate-900">65.8M</div>
+              <div id="stat-sub-total" class="text-[10px] text-slate-400 font-medium">65.800.000 đ</div>
+            </div>
+          </div>
+
+          <!-- Card 2: Đã thu -->
+          <div class="bg-emerald-50/50 rounded-2xl p-3 border border-emerald-100 flex flex-col justify-between">
+            <div class="flex items-center gap-1.5 text-emerald-800 text-[11px] font-semibold mb-1">
+              <i class="far fa-circle-check text-emerald-600 text-xs"></i>
+              <span>Đã thu</span>
+            </div>
+            <div>
+              <div id="stat-total-paid" class="text-base font-black text-emerald-600">35.0M</div>
+              <div id="stat-sub-paid" class="text-[10px] text-slate-400 font-medium">35.000.000 đ</div>
+            </div>
+          </div>
+
+          <!-- Card 3: Còn lại -->
+          <div class="bg-blue-50/70 rounded-2xl p-3 border border-blue-200/80 flex flex-col justify-between">
+            <div class="flex items-center gap-1.5 text-rose-700 text-[11px] font-semibold mb-1">
+              <i class="far fa-clock text-rose-500 text-xs"></i>
+              <span>Còn lại</span>
+            </div>
+            <div>
+              <div id="stat-total-remaining" class="text-base font-black text-blue-600">30.8M</div>
+              <div id="stat-sub-remaining" class="text-[10px] text-slate-400 font-medium">30.800.000 đ</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="relative flex items-center">
+          <i class="fas fa-search absolute left-3.5 text-slate-400 text-xs"></i>
+          <input id="invoices-search" oninput="window.currentInvoiceSearch = this.value; renderInvoicesPage();" type="text" placeholder="Tìm khách hàng, mã hóa đơn (HD-001)..." class="w-full bg-white border border-slate-200 rounded-xl py-2.5 pl-9 pr-3 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 shadow-sm"/>
+        </div>
+
+        <!-- Filter Bar: Month & Status Tabs -->
+        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5">
+          <button class="flex items-center gap-1.5 bg-white border border-slate-200 rounded-full px-3 py-1.5 text-xs font-bold text-slate-800 shadow-sm flex-shrink-0">
+            <i class="far fa-calendar text-blue-600 text-xs"></i>
+            <span>Tháng hiện tại</span>
+            <i class="fas fa-chevron-down text-[9px] text-slate-400"></i>
+          </button>
+
+          <button onclick="setInvoiceFilter('all', this)" class="btn-inv-filter bg-blue-600 text-white text-xs font-bold px-3.5 py-1.5 rounded-full flex-shrink-0 shadow-sm">
+            Tất cả (0)
+          </button>
+          <button onclick="setInvoiceFilter('paid', this)" class="btn-inv-filter bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold px-3.5 py-1.5 rounded-full flex-shrink-0">
+            Đã thanh toán (0)
+          </button>
+          <button onclick="setInvoiceFilter('debt', this)" class="btn-inv-filter bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold px-3.5 py-1.5 rounded-full flex-shrink-0">
+            Còn nợ (0)
+          </button>
+        </div>
+
+        <!-- Invoices List Container -->
+        <div id="invoices-list-container"></div>
+
+        <!-- Bottom Status Line -->
+        <div class="text-center py-2 text-[11px] text-slate-400 space-y-0.5">
+          <p class="font-medium text-slate-600 flex items-center justify-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+            <span id="invoice-status-count">Đang hiển thị 0/0 hóa đơn</span>
+          </p>
+          <p>Dữ liệu được cập nhật tức thời theo thời gian thực</p>
+        </div>
+
+      </div> <!-- End app-scroll-area -->
+
+    </div> <!-- End app-container -->
+  </div> <!-- End device-wrapper -->
+
+  <!-- Scripts -->
+  <script src="../js/common.js"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script type="module" src="../js/invoice.js"></script>
+</body>
+</html>
+

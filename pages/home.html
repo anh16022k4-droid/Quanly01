@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Trang Chủ - Quản Lý Công Việc</title>
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../css/common.css"/>
+  <link rel="stylesheet" href="../css/components.css"/>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex items-center justify-center p-0">
+
+  <!-- Mobile Device Shell Wrapper -->
+  <div class="device-wrapper">
+    <div class="app-container">
+      <div class="app-scroll-area p-4 space-y-4">
+        
+        <!-- Header Bar -->
+        <div class="flex items-center justify-between pt-1">
+          <div>
+            <h1 class="text-lg font-bold text-slate-900 leading-tight">Quản Lý Công Việc</h1>
+            <p class="text-xs text-slate-500">Trang Chủ</p>
+          </div>
+          <a href="login.html" class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white text-base shadow hover:bg-blue-700 transition" title="Đăng nhập / Hồ sơ">
+            <i class="fas fa-user"></i>
+          </a>
+        </div>
+
+        <!-- Month Filter Capsule -->
+        <div>
+          <button class="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-full px-4 py-1.5 text-xs font-bold text-slate-800 shadow-sm hover:border-slate-300 transition">
+            <i class="far fa-calendar text-blue-600 text-sm"></i>
+            <span id="home-month-label">Tháng hiện tại</span>
+            <i class="fas fa-chevron-down text-[10px] text-slate-400 ml-0.5"></i>
+          </button>
+        </div>
+
+        <!-- 2x2 Stat Cards Grid -->
+        <div class="grid grid-cols-2 gap-3">
+          <!-- Card 1: Tổng công -->
+          <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.03)] flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-slate-500">Tổng công</span>
+              <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm">
+                <i class="far fa-calendar-check"></i>
+              </div>
+            </div>
+            <div>
+              <span id="home-total-work" class="text-2xl font-extrabold text-blue-600">0.0 công</span>
+            </div>
+          </div>
+
+          <!-- Card 2: Tổng thu -->
+          <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.03)] flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-slate-500">Tổng thu</span>
+              <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm">
+                <i class="fas fa-arrow-up"></i>
+              </div>
+            </div>
+            <div>
+              <span id="home-total-income" class="text-[17px] font-extrabold text-emerald-600 tracking-tight">+0 đ</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Tổng chi -->
+          <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.03)] flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-slate-500">Tổng chi</span>
+              <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-sm">
+                <i class="fas fa-arrow-down"></i>
+              </div>
+            </div>
+            <div>
+              <span id="home-total-expense" class="text-[17px] font-extrabold text-rose-600 tracking-tight">-0 đ</span>
+            </div>
+          </div>
+
+          <!-- Card 4: Còn lại -->
+          <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.03)] flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-slate-500">Còn lại</span>
+              <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm">
+                <i class="fas fa-wallet"></i>
+              </div>
+            </div>
+            <div>
+              <span id="home-balance" class="text-[17px] font-extrabold text-blue-600 tracking-tight">0 đ</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Big Primary Action: Chấm công hôm nay -->
+        <a href="attendance-create.html" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-bold py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 transition">
+          <i class="far fa-plus-square text-lg"></i>
+          <span>Chấm công hôm nay</span>
+        </a>
+
+        <!-- Section: Chấm công gần đây -->
+        <div class="pt-1">
+          <div class="flex items-center justify-between mb-2.5">
+            <div class="flex items-center gap-2">
+              <i class="far fa-clock text-blue-600 text-sm"></i>
+              <h2 class="font-bold text-slate-800 text-sm">Chấm công gần đây</h2>
+            </div>
+            <a href="attendance.html" class="text-xs font-bold text-blue-600 hover:text-blue-700">Xem tất cả &gt;</a>
+          </div>
+
+          <div id="home-recent-attendance"></div>
+        </div>
+
+        <!-- Section: Hóa đơn gần đây -->
+        <div class="pt-1">
+          <div class="flex items-center justify-between mb-2.5">
+            <div class="flex items-center gap-2">
+              <i class="far fa-file-lines text-blue-600 text-sm"></i>
+              <h2 class="font-bold text-slate-800 text-sm">Hóa đơn gần đây</h2>
+            </div>
+            <a href="invoices.html" class="text-xs font-bold text-blue-600 hover:text-blue-700">Tất cả &gt;</a>
+          </div>
+
+          <div id="home-recent-invoices"></div>
+        </div>
+
+      </div> <!-- End app-scroll-area -->
+
+    </div> <!-- End app-container -->
+  </div> <!-- End device-wrapper -->
+
+  <!-- Scripts -->
+  <script src="../js/common.js"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script type="module" src="../js/home.js"></script>
+  <!-- Legacy demo renderer disabled. -->
+  <!-- <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Render recent attendance
+      const attList = getAttendanceList().slice(0, 2);
+      const attEl = document.getElementById("home-recent-attendance");
+      if (attEl) {
+        attEl.innerHTML = attList.map(item => `
+          <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.03)] mb-3">
+            <div class="flex items-center justify-between mb-2.5">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-slate-800 text-[14px]">${item.date}</span>
+                <span class="text-slate-400 text-xs">•</span>
+                <span class="text-slate-600 text-[13px] font-medium truncate max-w-[150px]">
+                  ${item.workers.map(w => w.name).join(' & ')}
+                </span>
+              </div>
+              <span class="bg-blue-50 text-blue-600 text-xs font-semibold px-2.5 py-1 rounded-full border border-blue-100">
+                ${item.totalCong.toFixed(1)} công
+              </span>
+            </div>
+            <div class="flex items-center justify-between text-xs text-slate-500 mb-2.5 pb-2 border-b border-slate-50">
+              <div class="flex items-center gap-3">
+                <span class="flex items-center gap-1 font-medium text-slate-700">
+                  Sáng <i class="fas fa-check-circle text-emerald-500"></i>
+                </span>
+                <span class="flex items-center gap-1 font-medium ${item.workers.some(w => w.chieu) ? 'text-slate-700' : 'text-slate-400'}">
+                  Chiều ${item.workers.some(w => w.chieu) ? '<i class="fas fa-check-circle text-emerald-500"></i>' : '<i class="fas fa-times-circle text-slate-300"></i>'}
+                </span>
+              </div>
+              <div class="flex items-center gap-1 text-slate-500 truncate max-w-[150px]">
+                <i class="fas fa-location-dot text-rose-500 text-[11px]"></i>
+                <span class="truncate">${item.location.split(' - ')[0]}</span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between text-xs pt-0.5">
+              <div class="text-emerald-600 font-semibold">Thu: +${formatMoney(item.thu)} đ</div>
+              <div class="${item.chi > 0 ? 'text-rose-600' : 'text-slate-500'} font-semibold">Chi: ${item.chi > 0 ? '-' + formatMoney(item.chi) : '0'} đ</div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Render recent invoices
+      const invList = getInvoiceList().slice(0, 2);
+      const invEl = document.getElementById("home-recent-invoices");
+      if (invEl) {
+        invEl.innerHTML = invList.map(inv => `
+          <a href="invoices.html" class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.03)] mb-3 flex items-center justify-between block hover:border-slate-300 transition">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0">
+                <i class="fas fa-file-invoice text-lg"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-1.5 mb-0.5">
+                  <span class="font-bold text-blue-600 text-xs">${inv.code}</span>
+                  <span class="text-[10px] ${inv.statusClass} font-medium px-1.5 py-0.5 rounded">
+                    ${inv.statusLabel || 'Đã lưu'}
+                  </span>
+                </div>
+                <div class="font-semibold text-slate-800 text-sm leading-snug">${inv.client}</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">${inv.date}</div>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="font-bold text-slate-900 text-sm">${formatMoney(inv.totalAmount)}</div>
+              <div class="text-[10px] text-slate-400 font-medium">VNĐ</div>
+            </div>
+          </a>
+        `).join('');
+      }
+    });
+
+    function formatMoney(n) {
+      return new Intl.NumberFormat('vi-VN').format(n);
+    }
+  </script> -->
+</body>
+</html>
+

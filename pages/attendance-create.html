@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Chấm Công Mới - Quản Lý Công Việc</title>
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../css/common.css"/>
+  <link rel="stylesheet" href="../css/components.css"/>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex items-center justify-center p-0">
+
+  <!-- Mobile Device Shell Wrapper -->
+  <div class="device-wrapper">
+    <div class="app-container bg-white relative">
+      
+      <!-- Top Modal Header -->
+      <div class="flex items-center justify-between p-3.5 border-b border-slate-100 z-30 sticky top-0 bg-white">
+        <a href="attendance.html" class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xs hover:bg-blue-100 transition">
+          <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="text-center">
+          <h3 class="font-bold text-slate-900 text-sm leading-snug">Chấm công mới</h3>
+          <p class="text-[11px] text-blue-600 font-medium flex items-center justify-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span> Ghi nhận hằng ngày
+          </p>
+        </div>
+        <a href="attendance.html" class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xs hover:bg-blue-100 transition">
+          <i class="fas fa-times"></i>
+        </a>
+      </div>
+
+      <!-- Scrollable Form Body -->
+      <div class="app-scroll-area has-action-bar p-4 space-y-4">
+        
+        <!-- Section 1: Ngày làm việc (Đã bỏ Hôm qua / Hôm nay, tích hợp Lịch chọn ngày lấy hôm nay làm mốc) -->
+        <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2 text-slate-800 font-bold text-xs">
+              <i class="far fa-calendar-days text-blue-600 text-sm"></i>
+              <span>Ngày làm việc</span>
+            </div>
+            <span class="text-[10px] text-slate-400 font-medium italic">Nhấn để mở lịch</span>
+          </div>
+
+          <!-- Clickable Date Picker Box -->
+          <div onclick="openCalendarModal()" class="relative flex items-center justify-between bg-blue-50/60 border border-blue-200/80 rounded-xl p-3 text-xs cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition select-none">
+            <div class="flex items-center gap-2.5 font-bold text-slate-800">
+              <div class="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs shadow-sm">
+                <i class="far fa-calendar"></i>
+              </div>
+              <div>
+                <span id="display-date-text" class="text-sm font-extrabold text-slate-900 block leading-tight">10/09/2026</span>
+                <span class="text-[10px] text-blue-600 font-semibold">Chọn ngày từ lịch</span>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-2">
+              <span id="display-day-of-week" class="bg-blue-100 text-blue-800 text-[11px] font-bold px-2.5 py-1 rounded-lg">
+                Thứ Năm
+              </span>
+              <i class="fas fa-chevron-right text-xs text-slate-400"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Nhân sự & Ca làm việc -->
+        <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2 text-slate-800 font-bold text-xs">
+              <i class="fas fa-users text-blue-600 text-sm"></i>
+              <span>Nhân sự & Ca làm việc</span>
+            </div>
+            <button type="button" onclick="openAddWorkerModal()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-blue-100 flex items-center gap-1 transition">
+              <i class="fas fa-user-plus text-[10px]"></i>
+              <span>Thêm nhân sự</span>
+            </button>
+          </div>
+
+          <!-- Dynamic Workers List Container -->
+          <div id="workers-list-container" class="space-y-2.5"></div>
+
+          <!-- Live Summary Box -->
+          <div id="calc-summary" class="bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-center justify-between"></div>
+        </div>
+
+        <!-- Section 3: Thu & Chi trong ngày -->
+        <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm space-y-3">
+          <div class="flex items-center gap-2 text-slate-800 font-bold text-xs">
+            <i class="fas fa-money-bill-transfer text-blue-600 text-sm"></i>
+            <span>Thu & Chi trong ngày</span>
+          </div>
+
+          <!-- Tiền thu -->
+          <div>
+            <div class="flex items-center justify-between text-xs mb-1.5">
+              <div class="flex items-center gap-1.5 text-slate-700 font-semibold">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>Tiền thu trong ngày</span>
+              </div>
+              <span class="text-[11px] text-emerald-600 font-medium">Tạm tính dương</span>
+            </div>
+
+            <!-- Input with Stepper (+/- 1.000 đ) -->
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="stepAmount('thu', -1000)" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center transition shadow-sm" title="Giảm 1.000 đ">
+                <i class="fas fa-minus text-xs"></i>
+              </button>
+
+              <div class="flex-1 relative flex items-center bg-blue-50/40 border border-blue-100 rounded-xl px-3 py-1.5">
+                <i class="fas fa-plus-circle text-emerald-600 text-base mr-2"></i>
+                <input id="input-thu" type="text" inputmode="numeric" value="1.000.000" oninput="formatMoneyInput(this)" class="w-full bg-transparent font-black text-emerald-700 text-base focus:outline-none"/>
+                <span class="font-bold text-emerald-700 text-xs">đ</span>
+              </div>
+
+              <button type="button" onclick="stepAmount('thu', 1000)" class="w-9 h-9 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center border border-emerald-200 transition shadow-sm" title="Cộng 1.000 đ">
+                <i class="fas fa-plus text-xs"></i>
+              </button>
+            </div>
+
+            <!-- Quick Add Pills (including +1.000 đ) -->
+            <div class="flex items-center gap-1.5 mt-2 overflow-x-auto no-scrollbar py-0.5">
+              <button type="button" onclick="stepAmount('thu', 1000)" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-bold border border-emerald-200 transition flex-shrink-0">
+                + 1.000 đ
+              </button>
+              <button type="button" onclick="stepAmount('thu', 10000)" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-[11px] font-bold border border-blue-100 transition flex-shrink-0">
+                + 10k
+              </button>
+              <button type="button" onclick="stepAmount('thu', 50000)" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-[11px] font-bold border border-blue-100 transition flex-shrink-0">
+                + 50k
+              </button>
+              <button type="button" onclick="stepAmount('thu', 500000)" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-[11px] font-bold border border-blue-100 transition flex-shrink-0">
+                + 500k
+              </button>
+              <button type="button" onclick="stepAmount('thu', 1000000)" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-[11px] font-bold border border-blue-100 transition flex-shrink-0">
+                + 1tr
+              </button>
+            </div>
+          </div>
+
+          <!-- Chi phí phát sinh -->
+          <div class="pt-2">
+            <div class="flex items-center justify-between text-xs mb-1.5">
+              <div class="flex items-center gap-1.5 text-slate-700 font-semibold">
+                <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                <span>Chi phí phát sinh</span>
+              </div>
+              <span class="text-[11px] text-rose-500 font-medium">Xăng xe, ăn uống, vật tư</span>
+            </div>
+
+            <!-- Input with Stepper (+/- 1.000 đ) -->
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="stepAmount('chi', -1000)" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center transition shadow-sm" title="Giảm 1.000 đ">
+                <i class="fas fa-minus text-xs"></i>
+              </button>
+
+              <div class="flex-1 relative flex items-center bg-rose-50/40 border border-rose-100 rounded-xl px-3 py-1.5">
+                <i class="fas fa-minus-circle text-rose-600 text-base mr-2"></i>
+                <input id="input-chi" type="text" inputmode="numeric" value="100.000" oninput="formatMoneyInput(this)" class="w-full bg-transparent font-black text-rose-700 text-base focus:outline-none"/>
+                <span class="font-bold text-rose-700 text-xs">đ</span>
+              </div>
+
+              <button type="button" onclick="stepAmount('chi', 1000)" class="w-9 h-9 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold flex items-center justify-center border border-rose-200 transition shadow-sm" title="Cộng 1.000 đ">
+                <i class="fas fa-plus text-xs"></i>
+              </button>
+            </div>
+
+            <!-- Quick Add Pills (including +1.000 đ) -->
+            <div class="flex items-center gap-1.5 mt-2 overflow-x-auto no-scrollbar py-0.5">
+              <button type="button" onclick="stepAmount('chi', 1000)" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-[11px] font-bold border border-rose-200 transition flex-shrink-0">
+                + 1.000 đ
+              </button>
+              <button type="button" onclick="stepAmount('chi', 10000)" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold border border-slate-200 transition flex-shrink-0">
+                + 10k
+              </button>
+              <button type="button" onclick="stepAmount('chi', 50000)" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold border border-slate-200 transition flex-shrink-0">
+                + 50k
+              </button>
+              <button type="button" onclick="stepAmount('chi', 100000)" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold border border-slate-200 transition flex-shrink-0">
+                + 100k
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Ghi chú công việc -->
+        <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm space-y-2">
+          <div class="flex items-center gap-2 text-slate-800 font-bold text-xs">
+            <i class="fas fa-pen-to-square text-blue-600 text-sm"></i>
+            <span>Ghi chú công việc</span>
+          </div>
+          <textarea id="input-notes" rows="2" class="w-full bg-blue-50/30 border border-blue-100 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:border-blue-500"></textarea>
+        </div>
+
+      </div> <!-- End app-scroll-area -->
+
+      <!-- Bottom Fixed Action Button -->
+      <div class="action-bar-fixed absolute bottom-0 left-0 right-0 p-4 border-t border-slate-100 bg-white shadow-lg z-30">
+        <button onclick="handleSaveAttendance()" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-bold py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25 transition">
+          <i class="fas fa-floppy-disk text-base"></i>
+          <span>Lưu chấm công</span>
+        </button>
+      </div>
+
+      <!-- ==================== POPUP MODAL: THÊM / SỬA NHÂN SỰ ==================== -->
+      <div id="modal-worker-form" class="modal-hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <!-- Backdrop -->
+        <div class="modal-backdrop absolute inset-0" onclick="closeWorkerModal()"></div>
+
+        <!-- Modal Box -->
+        <div class="bg-white rounded-3xl p-5 w-full max-w-xs relative z-10 shadow-2xl border border-slate-100 space-y-3.5 animate-fadeIn">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+            <h4 id="worker-modal-title" class="font-extrabold text-slate-900 text-sm">Thêm nhân sự mới</h4>
+            <button onclick="closeWorkerModal()" class="w-7 h-7 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center text-xs hover:bg-slate-200">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+
+          <input type="hidden" id="edit-worker-id" value=""/>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">Họ và tên nhân sự</label>
+            <input type="text" id="modal-worker-name" placeholder="Ví dụ: Trần Văn Nam" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 font-semibold focus:outline-none focus:border-blue-500"/>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">Mã viết tắt (Avatar)</label>
+            <input type="text" id="modal-worker-code" maxlength="3" placeholder="Ví dụ: TN" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 font-bold uppercase focus:outline-none focus:border-blue-500"/>
+            <span class="text-[10px] text-slate-400 italic">Để trống sẽ tự động lấy theo tên</span>
+          </div>
+
+          <div class="flex items-center gap-2 pt-2">
+            <button type="button" onclick="closeWorkerModal()" class="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-600 font-bold text-xs hover:bg-slate-200 transition">
+              Hủy
+            </button>
+            <button type="button" onclick="saveWorkerModal()" class="flex-1 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs hover:bg-blue-700 transition shadow-md shadow-blue-500/20">
+              Lưu nhân sự
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div> <!-- End app-container -->
+  </div> <!-- End device-wrapper -->
+
+  <!-- ==================== CALENDAR MODAL ==================== -->
+  <div id="modal-calendar" class="modal-hidden fixed inset-0 z-50 flex items-end justify-center">
+    <div class="modal-backdrop absolute inset-0" onclick="closeCalendarModal()"></div>
+    <div class="bg-white rounded-t-3xl p-5 w-full max-w-sm relative z-10 shadow-2xl animate-slideUp pb-safe">
+      
+      <!-- Header: Year + Month navigation -->
+      <div class="flex items-center justify-between mb-4">
+        <button onclick="closeCalendarModal()" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center text-xs hover:bg-slate-200">
+          <i class="fas fa-times"></i>
+        </button>
+        <div class="text-center">
+          <p class="text-[11px] text-slate-500 font-semibold">Chọn ngày làm việc</p>
+          <!-- Year & Month Row -->
+          <div class="flex items-center gap-2 mt-1">
+            <button onclick="changeCalYear(-1)" class="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px] hover:bg-blue-100">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <span id="cal-year-display" class="font-extrabold text-slate-900 text-sm w-10 text-center"></span>
+            <button onclick="changeCalYear(1)" class="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px] hover:bg-blue-100">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+        <button onclick="selectCalToday()" class="px-2.5 py-1.5 bg-blue-600 text-white text-[11px] font-bold rounded-xl hover:bg-blue-700">
+          Hôm nay
+        </button>
+      </div>
+
+      <!-- Month Tabs (horizontal scroll) -->
+      <div id="cal-month-tabs" class="flex gap-1.5 overflow-x-auto no-scrollbar mb-4 pb-1"></div>
+
+      <!-- Day grid header -->
+      <div class="grid grid-cols-7 text-center mb-1">
+        <div class="text-[10px] font-bold text-rose-500">CN</div>
+        <div class="text-[10px] font-bold text-slate-500">T2</div>
+        <div class="text-[10px] font-bold text-slate-500">T3</div>
+        <div class="text-[10px] font-bold text-slate-500">T4</div>
+        <div class="text-[10px] font-bold text-slate-500">T5</div>
+        <div class="text-[10px] font-bold text-slate-500">T6</div>
+        <div class="text-[10px] font-bold text-slate-500">T7</div>
+      </div>
+
+      <!-- Day grid cells -->
+      <div id="cal-days-grid" class="grid grid-cols-7 gap-0.5 text-center"></div>
+
+      <!-- Confirm button -->
+      <button onclick="confirmCalendarDate()" class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-2xl text-sm shadow-lg shadow-blue-500/20 transition">
+        <i class="fas fa-check mr-2"></i>Xác nhận ngày này
+      </button>
+    </div>
+  </div>
+
+  <!-- Supabase-backed page logic -->
+  <script src="../js/common.js"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script type="module" src="../js/attendance-create.js"></script>
+
+  <!-- Legacy inline implementation disabled. -->
+  <!-- <script>
+    // State of workers list (allow add, edit, toggle shift)
+    let workersList = [
+      { id: "w1", code: "G", name: "Giới", color: "bg-blue-100 text-blue-700", selected: true, sang: true, chieu: true },
+      { id: "w2", code: "K", name: "Khiêm", color: "bg-emerald-100 text-emerald-700", selected: true, sang: true, chieu: false }
+    ];
+
+    // Days of week in Vietnamese
+    const vietnameseDays = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+
+    // Initialize date display with today
+    function initDate() {
+      updateDateDisplay(new Date());
+    }
+
+    function updateDateDisplay(d) {
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      const textEl = document.getElementById("display-date-text");
+      const dayEl = document.getElementById("display-day-of-week");
+      if (textEl) textEl.textContent = `${day}/${month}/${year}`;
+      if (dayEl) dayEl.textContent = vietnameseDays[d.getDay()];
+    }
+
+    // ============================================================
+    // MONEY FORMAT HELPERS (định dạng tiền VN dấu chấm ngăn nghìn)
+    // ============================================================
+    function parseMoneyValue(str) {
+      return parseInt(String(str).replace(/\./g, ''), 10) || 0;
+    }
+
+    function formatMoneyDisplay(num) {
+      return new Intl.NumberFormat('vi-VN').format(Math.max(0, num));
+    }
+
+    // Gọi khi user đang gõ: tự định dạng lại
+    function formatMoneyInput(input) {
+      const raw = parseMoneyValue(input.value);
+      const formatted = formatMoneyDisplay(raw);
+      // Chỉ update nếu khác để tránh re-trigger
+      if (input.value !== formatted) {
+        input.value = formatted;
+      }
+    }
+
+    // Stepper: parse → cộng/trừ delta → format lại
+    function stepAmount(type, delta) {
+      const input = document.getElementById(type === "thu" ? "input-thu" : "input-chi");
+      if (input) {
+        let val = parseMoneyValue(input.value);
+        val = Math.max(0, val + delta);
+        input.value = formatMoneyDisplay(val);
+      }
+    }
+
+    // ============================================================
+    // CUSTOM CALENDAR MODAL (full year / month / day picker)
+    // ============================================================
+    let calState = { year: 0, month: 0, selectedDay: 0 };
+
+    function openCalendarModal() {
+      // Đọc ngày đang hiển thị để mở đúng tháng
+      const displayedText = document.getElementById("display-date-text").textContent;
+      const parts = displayedText.split('/');
+      if (parts.length === 3) {
+        calState.selectedDay = parseInt(parts[0]);
+        calState.month = parseInt(parts[1]) - 1;
+        calState.year = parseInt(parts[2]);
+      } else {
+        const today = new Date();
+        calState.year = today.getFullYear();
+        calState.month = today.getMonth();
+        calState.selectedDay = today.getDate();
+      }
+      document.getElementById("modal-calendar").classList.remove("modal-hidden");
+      renderCalendar();
+    }
+
+    function closeCalendarModal() {
+      document.getElementById("modal-calendar").classList.add("modal-hidden");
+    }
+
+    function changeCalYear(delta) {
+      calState.year += delta;
+      // Clamp selectedDay nếu vượt quá số ngày trong tháng mới
+      const maxDay = new Date(calState.year, calState.month + 1, 0).getDate();
+      calState.selectedDay = Math.min(calState.selectedDay, maxDay);
+      renderCalendar();
+    }
+
+    function changeCalMonth(month) {
+      calState.month = month;
+      const maxDay = new Date(calState.year, calState.month + 1, 0).getDate();
+      calState.selectedDay = Math.min(calState.selectedDay, maxDay);
+      renderCalendar();
+    }
+
+    function selectCalToday() {
+      const today = new Date();
+      calState.year = today.getFullYear();
+      calState.month = today.getMonth();
+      calState.selectedDay = today.getDate();
+      renderCalendar();
+    }
+
+    function renderCalendar() {
+      const { year, month, selectedDay } = calState;
+      const today = new Date();
+      const shortNames = ['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'];
+
+      // Hiển thị năm
+      document.getElementById("cal-year-display").textContent = year;
+
+      // Render month tabs
+      const tabsEl = document.getElementById("cal-month-tabs");
+      tabsEl.innerHTML = shortNames.map((m, i) => `
+        <button onclick="changeCalMonth(${i})"
+          class="flex-shrink-0 px-3 py-1.5 rounded-xl text-[11px] font-bold transition
+          ${i === month ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+          ${m}
+        </button>
+      `).join('');
+
+      // Cuộn tab tháng đang chọn vào giữa
+      setTimeout(() => {
+        const active = tabsEl.querySelector('.bg-blue-600');
+        if (active) active.scrollIntoView({ inline: 'center', behavior: 'smooth' });
+      }, 50);
+
+      // Render day grid
+      const firstDay = new Date(year, month, 1).getDay(); // 0 = Chủ Nhật
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const gridEl = document.getElementById("cal-days-grid");
+
+      let cells = '';
+      for (let i = 0; i < firstDay; i++) cells += `<div></div>`;
+
+      const isCurrentMonth = (today.getFullYear() === year && today.getMonth() === month);
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        const isToday = isCurrentMonth && d === today.getDate();
+        const isSelected = d === selectedDay;
+        const dayOfWeek = new Date(year, month, d).getDay();
+        const isSunday = dayOfWeek === 0;
+
+        let cls = 'w-full aspect-square rounded-xl flex items-center justify-center text-xs cursor-pointer transition ';
+        if (isSelected) {
+          cls += 'bg-blue-600 text-white shadow-md font-extrabold scale-110';
+        } else if (isToday) {
+          cls += 'bg-blue-100 text-blue-700 font-extrabold ring-2 ring-blue-400';
+        } else if (isSunday) {
+          cls += 'text-rose-500 hover:bg-rose-50 font-semibold';
+        } else {
+          cls += 'text-slate-700 hover:bg-slate-100 font-semibold';
+        }
+
+        cells += `<div onclick="selectCalDay(${d})" class="${cls}">${d}</div>`;
+      }
+
+      gridEl.innerHTML = cells;
+    }
+
+    function selectCalDay(day) {
+      calState.selectedDay = day;
+      renderCalendar();
+    }
+
+    function confirmCalendarDate() {
+      const { year, month, selectedDay } = calState;
+      updateDateDisplay(new Date(year, month, selectedDay));
+      closeCalendarModal();
+    }
+
+    // ============================================================
+    // RENDER WORKERS
+    // ============================================================
+    function renderWorkers() {
+      const container = document.getElementById("workers-list-container");
+      if (!container) return;
+
+      container.innerHTML = workersList.map(w => {
+        let cong = 0;
+        if (w.selected) {
+          if (w.sang) cong += 0.5;
+          if (w.chieu) cong += 0.5;
+        }
+        return `
+          <div class="bg-blue-50/40 border border-blue-100 rounded-xl p-3 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <input type="checkbox" ${w.selected ? 'checked' : ''} onchange="toggleWorkerCheck('${w.id}', this.checked)" class="custom-checkbox"/>
+                <span class="w-6 h-6 rounded-full ${w.color || 'bg-blue-100 text-blue-700'} text-[10px] font-bold flex items-center justify-center">${w.code}</span>
+                <span class="font-bold text-slate-800 text-xs">${w.name}</span>
+                <button type="button" onclick="openEditWorkerModal('${w.id}')" class="text-slate-400 hover:text-blue-600 p-0.5" title="Sửa">
+                  <i class="fas fa-pen text-[10px]"></i>
+                </button>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">${cong.toFixed(1)} công</span>
+                ${workersList.length > 1 ? `
+                  <button type="button" onclick="deleteWorker('${w.id}')" class="text-slate-300 hover:text-rose-500 text-[11px]" title="Xóa">
+                    <i class="fas fa-trash-can"></i>
+                  </button>` : ''}
+              </div>
+            </div>
+            <div class="flex items-center gap-2 pt-1">
+              <button type="button" onclick="toggleShiftBtn('${w.id}', 'sang')"
+                class="flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition
+                ${w.sang ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}">
+                <i class="fas ${w.sang ? 'fa-sun' : 'fa-circle-minus'} text-xs"></i>
+                <span>${w.sang ? 'Sáng (0.5)' : 'Sáng'}</span>
+              </button>
+              <button type="button" onclick="toggleShiftBtn('${w.id}', 'chieu')"
+                class="flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition
+                ${w.chieu ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}">
+                <i class="fas ${w.chieu ? 'fa-sun' : 'fa-circle-minus'} text-xs"></i>
+                <span>${w.chieu ? 'Chiều (0.5)' : 'Chiều'}</span>
+              </button>
+            </div>
+          </div>`;
+      }).join('');
+
+      recalcAttForm();
+    }
+
+    function toggleWorkerCheck(id, checked) {
+      const w = workersList.find(x => x.id === id);
+      if (w) { w.selected = checked; renderWorkers(); }
+    }
+
+    function toggleShiftBtn(id, shift) {
+      const w = workersList.find(x => x.id === id);
+      if (w) { w[shift] = !w[shift]; renderWorkers(); }
+    }
+
+    function recalcAttForm() {
+      let people = 0, cong = 0;
+      workersList.forEach(w => {
+        if (w.selected) {
+          people++;
+          if (w.sang) cong += 0.5;
+          if (w.chieu) cong += 0.5;
+        }
+      });
+      const summary = document.getElementById("calc-summary");
+      if (summary) {
+        summary.innerHTML = `
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold">
+              <i class="fas fa-calculator"></i>
+            </div>
+            <div class="font-bold text-blue-950 text-[13px]">
+              Tổng cộng: <span class="text-blue-600">${people} người làm</span> |
+              <span class="text-blue-600">${cong.toFixed(1)} công</span>
+            </div>
+          </div>
+          <div class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></div>`;
+      }
+    }
+
+    // ============================================================
+    // MODAL THÊM / SỬA NHÂN SỰ
+    // ============================================================
+    function openAddWorkerModal() {
+      document.getElementById("worker-modal-title").textContent = "Thêm nhân sự mới";
+      document.getElementById("edit-worker-id").value = "";
+      document.getElementById("modal-worker-name").value = "";
+      document.getElementById("modal-worker-code").value = "";
+      document.getElementById("modal-worker-form").classList.remove("modal-hidden");
+      document.getElementById("modal-worker-name").focus();
+    }
+
+    function openEditWorkerModal(id) {
+      const w = workersList.find(x => x.id === id);
+      if (!w) return;
+      document.getElementById("worker-modal-title").textContent = "Chỉnh sửa nhân sự";
+      document.getElementById("edit-worker-id").value = id;
+      document.getElementById("modal-worker-name").value = w.name;
+      document.getElementById("modal-worker-code").value = w.code;
+      document.getElementById("modal-worker-form").classList.remove("modal-hidden");
+      document.getElementById("modal-worker-name").focus();
+    }
+
+    function closeWorkerModal() {
+      document.getElementById("modal-worker-form").classList.add("modal-hidden");
+    }
+
+    function saveWorkerModal() {
+      const name = document.getElementById("modal-worker-name").value.trim();
+      let code = document.getElementById("modal-worker-code").value.trim().toUpperCase();
+      const editId = document.getElementById("edit-worker-id").value;
+
+      if (!name) { showToast("Vui lòng nhập tên nhân sự!", "error"); return; }
+      if (!code) {
+        const parts = name.split(" ");
+        code = parts.length > 1
+          ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+          : name.substring(0, 2).toUpperCase();
+      }
+
+      if (editId) {
+        const w = workersList.find(x => x.id === editId);
+        if (w) { w.name = name; w.code = code; showToast(`Đã cập nhật: ${name}`, "success"); }
+      } else {
+        const colors = ["bg-blue-100 text-blue-700","bg-emerald-100 text-emerald-700",
+                        "bg-purple-100 text-purple-700","bg-orange-100 text-orange-700","bg-pink-100 text-pink-700"];
+        workersList.push({ id: "w" + Date.now(), code, name, color: colors[workersList.length % colors.length], selected: true, sang: true, chieu: true });
+        showToast(`Đã thêm nhân sự: ${name}`, "success");
+      }
+      closeWorkerModal();
+      renderWorkers();
+    }
+
+    function deleteWorker(id) {
+      if (confirm("Bạn có chắc chắn muốn xóa nhân sự này?")) {
+        workersList = workersList.filter(x => x.id !== id);
+        renderWorkers();
+        showToast("Đã xóa nhân sự khỏi danh sách", "info");
+      }
+    }
+
+    function handleSaveAttendance() {
+      const active = workersList.filter(w => w.selected && (w.sang || w.chieu));
+      if (active.length === 0) { showToast("Vui lòng chọn ít nhất 1 nhân sự và ca làm!", "error"); return; }
+      showToast("Lưu bản ghi chấm công thành công!", "success");
+      setTimeout(() => { window.location.href = "attendance.html"; }, 600);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initDate();
+      renderWorkers();
+    });
+  </script> -->
+</body>
+</html>

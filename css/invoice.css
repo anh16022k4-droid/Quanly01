@@ -1,0 +1,95 @@
+/* Invoice & A4 Print Styles */
+
+.a4-sheet {
+  background-color: #ffffff;
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  padding: 24px 18px;
+  position: relative;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #1e293b;
+}
+
+/* Invoice Table */
+.invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.invoice-table th {
+  background-color: #f1f5f9;
+  color: #475569;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  padding: 8px 6px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.invoice-table td {
+  padding: 8px 6px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+}
+
+.invoice-table tr.month-header td {
+  background-color: #eff6ff;
+  color: #1e40af;
+  font-weight: 800;
+  font-size: 10px;
+  text-transform: uppercase;
+  padding: 6px 8px;
+}
+
+.invoice-table tr.subtotal-row td {
+  background-color: #f8fafc;
+  color: #1e293b;
+  font-weight: 700;
+  font-size: 10.5px;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 2px solid #cbd5e1;
+}
+
+/* Print Styles */
+@media print {
+  body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  header, nav, .mobile-notch, .action-bar-fixed, #toast-notification, .no-print {
+    display: none !important;
+  }
+
+  .device-wrapper {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    background: transparent !important;
+  }
+
+  .app-container, .app-scroll-area {
+    overflow: visible !important;
+    height: auto !important;
+    padding: 0 !important;
+  }
+
+  .a4-sheet {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+}
+

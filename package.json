@@ -1,0 +1,11 @@
+{
+  "name": "my-html-project",
+  "version": "1.0.0",
+  "description": "Website HTML CSS JavaScript",
+  "main": "index.html",
+  "author": "Bui Hoang Anh",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.116.0"
+  }
+}

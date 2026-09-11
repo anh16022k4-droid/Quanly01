@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Đăng Nhập - Quản Lý Công Việc</title>
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../css/common.css"/>
+  <link rel="stylesheet" href="../css/components.css"/>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex items-center justify-center p-0">
+
+  <!-- Mobile Device Shell Wrapper -->
+  <div class="device-wrapper">
+    <div class="app-container bg-white">
+      <div class="app-scroll-area p-6 flex flex-col justify-between min-h-full">
+        
+        <div>
+          <!-- Login Top Bar -->
+          <div class="flex items-center justify-between pt-1 mb-6">
+            <a href="home.html" class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition">
+              <i class="fas fa-arrow-left text-sm"></i>
+            </a>
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                <i class="fas fa-check"></i>
+              </div>
+              <span class="font-bold text-slate-800 text-base">Login</span>
+            </div>
+            <div class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm shadow">
+              <i class="fas fa-user"></i>
+            </div>
+          </div>
+
+          <!-- Login Branding Header -->
+          <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-3xl font-extrabold mx-auto mb-3.5 shadow-lg shadow-blue-500/25">
+              <i class="fas fa-check"></i>
+            </div>
+            <h3 class="text-blue-600 font-extrabold text-base tracking-wide mb-3">Quản Lý Công Việc</h3>
+            <h1 class="text-2xl font-extrabold text-slate-900 mb-2 tracking-tight">Đăng nhập</h1>
+            <p class="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed">
+              Chào mừng trở lại! Vui lòng nhập số điện thoại hoặc tài khoản của bạn.
+            </p>
+          </div>
+
+          <!-- Login Form -->
+          <form onsubmit="handleLogin(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Số điện thoại hoặc Email</label>
+              <div class="relative flex items-center">
+                <span class="absolute left-3.5 text-slate-400">
+                  <i class="fas fa-mobile-screen text-base"></i>
+                </span>
+                <input id="login-phone" type="tel" placeholder="Nhập số điện thoại" class="w-full bg-white border border-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm text-slate-800 focus:outline-none focus:border-blue-500 shadow-sm" required/>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Mật khẩu</label>
+              <div class="relative flex items-center">
+                <span class="absolute left-3.5 text-slate-400">
+                  <i class="fas fa-lock text-base"></i>
+                </span>
+                <input id="login-pwd" type="password" placeholder="Nhập mật khẩu của bạn" class="w-full bg-white border border-slate-200 rounded-xl py-3 pl-11 pr-11 text-sm text-slate-800 focus:outline-none focus:border-blue-500 shadow-sm" required/>
+                <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 p-1 focus:outline-none">
+                  <i id="pwd-eye-icon" class="far fa-eye text-slate-400"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between text-xs pt-1">
+              <label class="flex items-center gap-2 cursor-pointer text-slate-700 select-none">
+                <input type="checkbox" checked class="custom-checkbox"/>
+                <span class="font-medium">Ghi nhớ đăng nhập</span>
+              </label>
+              <a href="#" onclick="showToast('Liên hệ admin để cấp lại mật khẩu', 'info'); return false;" class="text-blue-600 font-semibold hover:underline">Quên mật khẩu?</a>
+            </div>
+
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-bold py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25 transition mt-2">
+              <span>Đăng nhập</span>
+              <i class="fas fa-arrow-right text-sm"></i>
+            </button>
+          </form>
+
+          <!-- Divider -->
+          <div class="relative flex py-5 items-center">
+            <div class="flex-grow border-t border-slate-200"></div>
+            <span class="flex-shrink mx-3 text-[11px] text-slate-400 font-medium">Hoặc đăng nhập nhanh bằng</span>
+            <div class="flex-grow border-t border-slate-200"></div>
+          </div>
+
+          <p id="login-error" class="hidden text-center text-xs font-semibold text-rose-600"></p>
+        </div>
+
+        <div class="text-center pt-6 text-xs text-slate-500">
+          Chưa có tài khoản nhóm? 
+          <a href="#" onclick="showToast('Vui lòng liên hệ quản trị viên nhóm', 'info'); return false;" class="text-blue-600 font-semibold hover:underline">Liên hệ Quản trị viên</a> hoặc 
+          <a href="#" onclick="showToast('Tính năng tạo nhóm mới', 'info'); return false;" class="text-blue-600 font-semibold hover:underline">Tạo nhóm mới</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/common.js"></script>
+  <script>
+    function togglePasswordVisibility() {
+      const input = document.getElementById("login-pwd");
+      const icon = document.getElementById("pwd-eye-icon");
+      if (input.type === "password") {
+        input.type = "text";
+        icon.className = "far fa-eye-slash text-blue-600";
+      } else {
+        input.type = "password";
+        icon.className = "far fa-eye text-slate-400";
+      }
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const phone = document.getElementById("login-phone").value.replace(/\D/g, "");
+      const password = document.getElementById("login-pwd").value;
+      const accounts = {
+        "0396739237": "Anh1602@",
+        "0375021277": "Oanh1701@",
+        "0376415055": "Gioi1110@"
+      };
+      const error = document.getElementById("login-error");
+
+      if (accounts[phone] !== password) {
+        error.textContent = "Số điện thoại hoặc mật khẩu không đúng.";
+        error.classList.remove("hidden");
+        return;
+      }
+
+      sessionStorage.setItem("app_logged_in", "true");
+      sessionStorage.setItem("app_user_phone", phone);
+      error.classList.add("hidden");
+      showToast("Đăng nhập thành công! Đang chuyển hướng...", "success");
+      setTimeout(() => {
+        window.location.href = "home.html";
+      }, 500);
+    }
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Tạo Hóa Đơn Mới - Quản Lý Công Việc</title>
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../css/common.css"/>
+  <link rel="stylesheet" href="../css/components.css"/>
+  <link rel="stylesheet" href="../css/invoice.css"/>
+  <style>
+    .item-july,
+    .item-august {
+      display: none;
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex items-center justify-center p-0">
+
+  <!-- Mobile Device Shell Wrapper -->
+  <div class="device-wrapper">
+    <div class="app-container">
+      
+      <!-- Top Sticky Navigation Bar -->
+      <div class="bg-white border-b border-slate-100 p-3.5 flex items-center justify-between z-30 sticky top-0">
+        <a href="invoices.html" class="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition">
+          <i class="fas fa-arrow-left text-xs"></i>
+        </a>
+        <div class="flex items-center gap-2">
+          <div class="w-6 h-6 rounded-lg bg-blue-600 flex items-center justify-center text-white text-[11px] font-bold shadow-sm">
+            <i class="fas fa-check"></i>
+          </div>
+          <span class="font-bold text-slate-800 text-sm">Tao Hoa Don Moi</span>
+        </div>
+        <a href="login.html" class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs shadow">
+          <i class="fas fa-user"></i>
+        </a>
+      </div>
+
+      <!-- Scrollable Form Body -->
+      <div class="app-scroll-area has-action-bar p-4 space-y-4">
+
+        <!-- Status & Draft Row -->
+        <div class="flex items-center justify-between text-xs">
+          <div class="flex items-center gap-1.5 text-slate-600 font-medium">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>Trạng thái: <strong class="text-slate-800">Soạn thảo</strong></span>
+          </div>
+          <button onclick="showToast('Đã lưu bản nháp thành công', 'success')" class="text-blue-600 font-bold bg-blue-50 border border-blue-100 px-3 py-1 rounded-lg hover:bg-blue-100 flex items-center gap-1 transition">
+            <i class="far fa-floppy-disk text-xs"></i>
+            <span>Lưu bản nháp</span>
+          </button>
+        </div>
+
+        <!-- Attendance Integration Capsule -->
+        <button onclick="showToast('Đã đồng bộ 8 ngày công việc từ sổ Chấm công', 'info')" class="w-full bg-blue-50/80 border border-blue-200/90 rounded-2xl p-3 flex items-center justify-between text-xs font-bold text-blue-800 hover:bg-blue-100 transition shadow-sm">
+          <div class="flex items-center gap-2">
+            <i class="far fa-clipboard text-blue-600 text-base"></i>
+            <span>Lấy dữ liệu từ Chấm Công</span>
+          </div>
+          <span class="bg-blue-200/70 text-blue-900 text-[11px] font-extrabold px-2.5 py-1 rounded-lg flex items-center gap-1">
+            8 ngày có việc <i class="fas fa-chevron-down text-[9px]"></i>
+          </span>
+        </button>
+
+        <!-- CARD 1: Thông tin khách hàng -->
+        <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.03)] space-y-3">
+          <div class="flex items-center gap-2 text-slate-800 font-bold text-xs">
+            <i class="far fa-id-card text-blue-600 text-sm"></i>
+            <span>Thông tin khách hàng</span>
+          </div>
+
+          <!-- Customer Name -->
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-500 mb-1">Khách hàng / Doanh nghiệp</label>
+            <div class="relative flex items-center">
+              <input type="text" id="cust-name" value="" class="w-full bg-slate-50/70 border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-blue-500"/>
+              <i class="far fa-circle-check text-blue-600 absolute right-3 text-xs"></i>
+            </div>
+          </div>
+
+          <!-- Customer Address -->
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-500 mb-1">Địa chỉ thi công / nghiệm thu</label>
+            <div class="relative flex items-center">
+              <input type="text" id="cust-address" value="" class="w-full bg-slate-50/70 border border-slate-200 rounded-xl py-2 px-3 text-xs text-slate-700 focus:outline-none focus:border-blue-500"/>
+              <i class="fas fa-location-dot text-slate-400 absolute right-3 text-xs"></i>
+            </div>
+          </div>
+
+          <!-- Phone & Date -->
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-500 mb-1">Số điện thoại</label>
+              <input type="text" id="cust-phone" value="" class="w-full bg-slate-50/70 border border-slate-200 rounded-xl py-2 px-3 text-xs font-medium text-slate-800 focus:outline-none"/>
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-500 mb-1">Ngày lập HĐ</label>
+              <input type="text" id="cust-date" value="" class="w-full bg-slate-50/70 border border-slate-200 rounded-xl py-2 px-3 text-xs font-medium text-slate-800 focus:outline-none"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 2: Thông tin hóa đơn -->
+        <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.03)] space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2 text-slate-800 font-bold text-xs">
+              <i class="far fa-file-lines text-emerald-600 text-sm"></i>
+              <span>Thông tin hóa đơn</span>
+            </div>
+            <span id="invoice-code" class="bg-blue-600 text-white text-[11px] font-black px-2 py-0.5 rounded">Mới</span>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-500 mb-1">Tiêu đề tài liệu</label>
+            <input type="text" id="invoice-title" value="" class="w-full bg-slate-50/70 border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold text-slate-800 focus:outline-none"/>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-500 mb-1">Diễn giải nội dung</label>
+            <input type="text" id="invoice-description" value="" class="w-full bg-slate-50/70 border border-slate-200 rounded-xl py-2 px-3 text-xs text-slate-700 focus:outline-none"/>
+          </div>
+
+          <!-- Switch Toggle: Print Date -->
+          <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+            <span class="text-slate-600 font-medium">Hiện ngày thực hiện trên bản in</span>
+            <label class="custom-switch">
+              <input type="checkbox" checked/>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- CARD 3: Chi tiết hạng mục gia công -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2 text-slate-800 font-bold text-xs">
+              <i class="fas fa-list-check text-blue-600 text-sm"></i>
+              <span>Chi tiết hạng mục gia công</span>
+            </div>
+            <span id="invoice-item-count" class="text-[11px] text-slate-400 font-semibold">0 hạng mục</span>
+          </div>
+
+          <!-- GROUP 1: THÁNG 7/2026 -->
+          <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="bg-blue-600 text-white text-xs font-black px-2.5 py-1 rounded-lg">Tháng 7/2026</span>
+                <span class="text-[11px] text-slate-400 font-medium">0 đầu việc</span>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] text-slate-400 block">Tổng tháng 7</span>
+                <span id="display-july-total" class="font-black text-blue-600 text-xs">8.000.000 đ</span>
+              </div>
+            </div>
+
+            <!-- Item A1 -->
+            <div class="item-july bg-slate-50/80 rounded-xl p-3 border border-slate-200/80 space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-700">A1 • 15/07/2026</span>
+                <button type="button" class="text-rose-500 hover:text-rose-700 p-1"><i class="far fa-trash-can"></i></button>
+              </div>
+              <input type="text" value="Cuốn lại motor cốt chính" class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs font-semibold text-slate-800"/>
+              
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <span class="text-[10px] text-slate-500 block mb-0.5">SL</span>
+                  <input type="number" value="1" oninput="recalculateCreateInvoice()" class="input-qty w-full bg-white border border-slate-200 rounded-lg p-1.5 text-xs text-center font-bold"/>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-500 block mb-0.5">Đơn vị tính</span>
+                  <div class="flex items-center gap-1">
+                    <button type="button" class="px-2 py-1 rounded bg-blue-600 text-white text-[10px] font-bold">cái</button>
+                    <button type="button" class="px-2 py-1 rounded bg-white text-slate-600 border border-slate-200 text-[10px]">bộ</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between pt-1">
+                <div>
+                  <span class="text-[10px] text-slate-500 block">Đơn giá</span>
+                  <input type="number" value="750000" oninput="recalculateCreateInvoice()" class="input-price w-24 bg-white border border-slate-200 rounded-lg p-1 text-xs font-bold text-slate-800"/>
+                </div>
+                <div class="text-right">
+                  <span class="text-[10px] text-slate-500 block">Thành tiền</span>
+                  <span class="display-line-total font-extrabold text-emerald-600 text-xs">750.000 đ</span>
+                </div>
+              </div>
+              <input type="text" value="Motor máy cắt số 2 phân xưởng A" class="w-full bg-white/70 border border-slate-200/60 rounded p-1.5 text-[11px] text-slate-500 italic"/>
+            </div>
+
+            <!-- Item A2 -->
+            <div class="item-july bg-slate-50/80 rounded-xl p-3 border border-slate-200/80 space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-700">A2 • 22/07/2026</span>
+                <button type="button" class="text-rose-500 hover:text-rose-700 p-1"><i class="far fa-trash-can"></i></button>
+              </div>
+              <input type="text" value="Thay bạc đạn và gia công trục máy" class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs font-semibold text-slate-800"/>
+              
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <span class="text-[10px] text-slate-500 block mb-0.5">SL</span>
+                  <input type="number" value="2" oninput="recalculateCreateInvoice()" class="input-qty w-full bg-white border border-slate-200 rounded-lg p-1.5 text-xs text-center font-bold"/>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-500 block mb-0.5">Đơn vị tính</span>
+                  <div class="flex items-center gap-1">
+                    <button type="button" class="px-2 py-1 rounded bg-white text-slate-600 border border-slate-200 text-[10px]">cái</button>
+                    <button type="button" class="px-2 py-1 rounded bg-blue-600 text-white text-[10px] font-bold">bộ</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between pt-1">
+                <div>
+                  <span class="text-[10px] text-slate-500 block">Đơn giá</span>
+                  <input type="number" value="3625000" oninput="recalculateCreateInvoice()" class="input-price w-24 bg-white border border-slate-200 rounded-lg p-1 text-xs font-bold text-slate-800"/>
+                </div>
+                <div class="text-right">
+                  <span class="text-[10px] text-slate-500 block">Thành tiền</span>
+                  <span class="display-line-total font-extrabold text-emerald-600 text-xs">7.250.000 đ</span>
+                </div>
+              </div>
+              <input type="text" value="Linh kiện Nhật Bản" class="w-full bg-white/70 border border-slate-200/60 rounded p-1.5 text-[11px] text-slate-500 italic"/>
+            </div>
+
+            <!-- Button: Add work for July -->
+            <button onclick="showToast('Thêm dòng công việc mới cho Tháng 7', 'info')" class="w-full py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs rounded-xl flex items-center justify-center gap-1 transition">
+              <i class="fas fa-plus text-[10px]"></i> Thêm công việc Tháng 7
+            </button>
+          </div>
+
+          <!-- GROUP 2: THÁNG 8/2026 -->
+          <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="bg-blue-600 text-white text-xs font-black px-2.5 py-1 rounded-lg">Tháng 8/2026</span>
+                <span class="text-[11px] text-slate-400 font-medium">0 đầu việc</span>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] text-slate-400 block">Tổng tháng 8</span>
+                <span id="display-august-total" class="font-black text-blue-600 text-xs">20.688.000 đ</span>
+              </div>
+            </div>
+
+            <!-- Item A3 -->
+            <div class="item-august bg-slate-50/80 rounded-xl p-3 border border-slate-200/80 space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-700">A3 • 05/08/2026</span>
+                <button type="button" class="text-rose-500 hover:text-rose-700 p-1"><i class="far fa-trash-can"></i></button>
+              </div>
+              <input type="text" value="Bảo dưỡng định kỳ dây chuyền cán" class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs font-semibold text-slate-800"/>
+              
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <span class="text-[10px] text-slate-500 block mb-0.5">SL</span>
+                  <input type="number" value="1" oninput="recalculateCreateInvoice()" class="input-qty w-full bg-white border border-slate-200 rounded-lg p-1.5 text-xs text-center font-bold"/>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-500 block mb-0.5">ĐVT</span>
+                  <span class="px-2.5 py-1 rounded bg-blue-600 text-white text-[10px] font-bold inline-block">gói</span>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between pt-1">
+                <div>
+                  <span class="text-[10px] text-slate-500 block">Đơn giá</span>
+                  <input type="number" value="15000000" oninput="recalculateCreateInvoice()" class="input-price w-28 bg-white border border-slate-200 rounded-lg p-1 text-xs font-bold text-slate-800"/>
+                </div>
+                <div class="text-right">
+                  <span class="text-[10px] text-slate-500 block">Thành tiền</span>
+                  <span class="display-line-total font-extrabold text-emerald-600 text-xs">15.000.000 đ</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item A4 -->
+            <div class="item-august bg-slate-50/80 rounded-xl p-3 border border-slate-200/80 space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-700">A4 • 18/08/2026</span>
+                <button type="button" class="text-rose-500 hover:text-rose-700 p-1"><i class="far fa-trash-can"></i></button>
+              </div>
+              <input type="text" value="Sửa máy xếp khay & cân chỉnh sensor" class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs font-semibold text-slate-800"/>
+              
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <span class="text-[10px] text-slate-500 block mb-0.5">SL</span>
+                  <input type="number" value="2" oninput="recalculateCreateInvoice()" class="input-qty w-full bg-white border border-slate-200 rounded-lg p-1.5 text-xs text-center font-bold"/>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-500 block mb-0.5">ĐVT</span>
+                  <span class="px-2.5 py-1 rounded bg-blue-600 text-white text-[10px] font-bold inline-block">cái</span>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between pt-1">
+                <div>
+                  <span class="text-[10px] text-slate-500 block">Đơn giá</span>
+                  <input type="number" value="2844000" oninput="recalculateCreateInvoice()" class="input-price w-28 bg-white border border-slate-200 rounded-lg p-1 text-xs font-bold text-slate-800"/>
+                </div>
+                <div class="text-right">
+                  <span class="text-[10px] text-slate-500 block">Thành tiền</span>
+                  <span class="display-line-total font-extrabold text-emerald-600 text-xs">5.688.000 đ</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Button: Add work for August -->
+            <button onclick="showToast('Thêm dòng công việc mới cho Tháng 8', 'info')" class="w-full py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs rounded-xl flex items-center justify-center gap-1 transition">
+              <i class="fas fa-plus text-[10px]"></i> Thêm công việc Tháng 8
+            </button>
+          </div>
+
+          <!-- Button: Add new Month group -->
+          <button onclick="showToast('Tạo nhóm tháng mới', 'info')" class="w-full py-2.5 bg-blue-50 border border-blue-200 rounded-2xl text-blue-700 font-bold text-xs flex items-center justify-center gap-2 hover:bg-blue-100 transition shadow-sm">
+            <i class="far fa-calendar-plus text-sm"></i>
+            <span>Thêm nhóm Tháng mới</span>
+          </button>
+        </div>
+
+        <!-- CARD 4: Khoản ứng trước -->
+        <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.03)] space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2 text-slate-800 font-bold text-xs">
+              <i class="fas fa-hand-holding-dollar text-rose-500 text-sm"></i>
+              <span>Khoản ứng trước</span>
+            </div>
+            <label class="custom-switch">
+              <input id="switch-advance" onchange="recalculateCreateInvoice()" type="checkbox" checked/>
+              <span class="slider slider-green"></span>
+            </label>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-500 mb-1">Số tiền khách đã tạm ứng</label>
+            <div class="relative flex items-center bg-blue-50/40 border border-blue-100 rounded-xl px-3 py-2">
+              <input id="input-advance-amount" oninput="recalculateCreateInvoice()" type="number" value="0" class="w-full bg-transparent font-black text-rose-600 text-base focus:outline-none"/>
+              <span class="text-xs font-bold text-slate-400">VND</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-500 mb-1">Ngày & Ghi chú chứng từ tạm ứng</label>
+            <input type="text" value="Đã ứng chuyển khoản đợt 1 ngày 15/08/2026" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs text-slate-700 focus:outline-none"/>
+          </div>
+        </div>
+
+        <!-- SUMMARY CALCULATION BOX -->
+        <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-2 text-xs">
+          <div class="flex items-center justify-between text-slate-600 font-medium">
+            <span>Tổng tiền việc (Tháng 7 + 8):</span>
+            <span id="display-total-services" class="font-bold text-slate-800">0 đ</span>
+          </div>
+
+          <div class="flex items-center justify-between text-rose-600 font-medium pb-2 border-b border-slate-100">
+            <span>Trừ khoản đã ứng trước:</span>
+            <span id="display-deduct-advance" class="font-bold">-0 đ</span>
+          </div>
+
+          <div class="bg-blue-50 border border-blue-100 rounded-xl p-3 flex items-center justify-between">
+            <span class="font-bold text-blue-900 text-xs">CÒN PHẢI THANH TOÁN:</span>
+            <div class="text-right">
+              <span id="display-final-remaining" class="text-lg font-black text-blue-600">0</span>
+              <span class="font-bold text-blue-600 text-xs ml-0.5">VND</span>
+            </div>
+          </div>
+
+          <div class="bg-blue-50/50 rounded-xl p-2.5 text-[11px] text-slate-600 flex items-start gap-2">
+            <i class="fas fa-circle-info text-blue-600 text-xs mt-0.5"></i>
+            <span class="leading-relaxed">Thanh toán chuyển khoản Vietcombank sau khi nghiệm thu bàn giao 03 ngày.</span>
+          </div>
+        </div>
+
+      </div> <!-- End app-scroll-area -->
+
+      <!-- Bottom Fixed Action Bar -->
+      <div class="action-bar-fixed absolute bottom-0 left-0 right-0 bg-white border-t border-slate-100 p-3 shadow-lg z-40">
+        <div class="flex items-center gap-2 mb-2">
+          <a href="invoice-detail.html?id=hd-006" class="py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1.5 transition">
+            <i class="fas fa-file-lines"></i> Xem A4
+          </a>
+          <button onclick="handleSaveInvoice()" class="flex-1 py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-500/25 transition">
+            <i class="fas fa-cloud-arrow-up"></i> LƯU HÓA ĐƠN
+          </button>
+        </div>
+        <div class="flex items-center justify-center gap-4 text-[11px] text-slate-400 font-medium">
+          <a href="invoice-detail.html?id=hd-006&export=zalo" class="hover:text-blue-600 flex items-center gap-1">
+            <i class="fas fa-share-nodes text-[10px]"></i> Xuất PDF gửi Zalo
+          </a>
+          <span>•</span>
+          <a href="invoice-detail.html?id=hd-006&print=true" class="hover:text-blue-600 flex items-center gap-1">
+            <i class="fas fa-print text-[10px]"></i> In nhanh / Khổ A4
+          </a>
+        </div>
+      </div>
+
+    </div> <!-- End app-container -->
+  </div> <!-- End device-wrapper -->
+
+  <!-- Scripts -->
+  <script src="../js/common.js"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script type="module" src="../js/invoice.js"></script>
+</body>
+</html>
+

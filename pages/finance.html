@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Sổ Quỹ Thu Chi - Quản Lý Công Việc</title>
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../css/common.css"/>
+  <link rel="stylesheet" href="../css/components.css"/>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex items-center justify-center p-0">
+
+  <!-- Mobile Device Shell Wrapper -->
+  <div class="device-wrapper">
+    <div class="app-container">
+      <div class="app-scroll-area p-4 space-y-4">
+        
+        <!-- Header Bar -->
+        <div class="flex items-center justify-between pt-1">
+          <div>
+            <h1 class="text-lg font-bold text-slate-900 leading-tight">Quản Lý Công Việc</h1>
+            <p class="text-xs text-slate-500">Thu Chi</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <!-- <div class="flex -space-x-1.5 overflow-hidden">
+              <span class="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center">A</span>
+              <span class="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-emerald-600 text-white text-[10px] font-bold flex items-center justify-center">B</span>
+              <span class="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-purple-600 text-white text-[10px] font-bold flex items-center justify-center">C</span>
+              <span class="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-slate-400 text-white text-[9px] font-bold flex items-center justify-center">+1</span>
+            </div> -->
+            <button class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600 text-xs hover:bg-slate-200">
+              <!-- <i class="fas fa-sliders"></i> -->
+            </button>
+            <a href="login.html" class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs shadow">
+              <i class="fas fa-user"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Main Balance Card (Số dư quỹ nhóm) -->
+        <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+          <div class="flex items-center justify-between mb-1.5">
+            <div class="flex items-center gap-2">
+              <i class="fas fa-landmark text-blue-600 text-sm"></i>
+              <span class="text-xs font-bold text-slate-600">Số dư</span>
+            </div>
+            <span class="bg-blue-50 text-blue-700 text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-blue-100">
+              An toàn
+            </span>
+          </div>
+
+          <div class="text-3xl font-black text-blue-600 tracking-tight mb-1">
+            <span id="finance-balance">0 đ</span>
+          </div>
+          <p id="finance-member-count" class="text-[11px] text-slate-400 mb-3.5">0 thành viên đồng quản lý</p>
+
+          <!-- 3 Columns -->
+          <div class="grid grid-cols-3 gap-2 pt-3 border-t border-slate-100">
+            <div>
+              <div class="flex items-center gap-1 text-[11px] text-slate-500 font-medium">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>Tổng thu</span>
+              </div>
+              <div id="finance-income" class="font-extrabold text-emerald-600 text-sm mt-0.5">+0 đ</div>
+              <div id="finance-income-count" class="text-[10px] text-slate-400">0 giao dịch</div>
+            </div>
+
+            <div>
+              <div class="flex items-center gap-1 text-[11px] text-slate-500 font-medium">
+                <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                <span>Tổng chi</span>
+              </div>
+              <div id="finance-expense" class="font-extrabold text-rose-600 text-sm mt-0.5">-0 đ</div>
+              <div id="finance-expense-count" class="text-[10px] text-slate-400">0 khoản chi</div>
+            </div>
+
+            <div>
+              <div class="flex items-center gap-1 text-[11px] text-slate-500 font-medium">
+                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                <span>Tỉ lệ dư</span>
+              </div>
+              <div id="finance-balance-rate" class="font-extrabold text-blue-600 text-sm mt-0.5">0%</div>
+              <div class="w-full bg-slate-100 rounded-full h-1.5 mt-1 overflow-hidden">
+                <div id="finance-balance-bar" class="bg-blue-600 h-1.5 rounded-full" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2 Action Buttons: Khoản thu & Khoản chi -->
+        <div class="grid grid-cols-2 gap-3">
+          <a href="attendance-create.html" class="py-3 px-4 rounded-2xl bg-emerald-100/70 hover:bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center gap-2 border border-emerald-200 transition shadow-sm">
+            <i class="fas fa-plus-circle text-emerald-600 text-base"></i>
+            <span>Khoản thu</span>
+          </a>
+          <a href="attendance-create.html" class="py-3 px-4 rounded-2xl bg-rose-100/70 hover:bg-rose-100 text-rose-800 font-bold text-xs flex items-center justify-center gap-2 border border-rose-200 transition shadow-sm">
+            <i class="fas fa-minus-circle text-rose-600 text-base"></i>
+            <span>Khoản chi</span>
+          </a>
+        </div>
+
+        <!-- Month & Search Bar -->
+        <div class="flex items-center justify-between">
+          <button class="inline-flex items-center gap-1.5 font-bold text-slate-800 text-sm">
+            <i class="far fa-calendar text-blue-600 text-xs"></i>
+            <span id="finance-month-label">Tháng hiện tại</span>
+            <i class="fas fa-chevron-down text-[10px] text-slate-400"></i>
+          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="window.print()" class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-600 text-xs shadow-sm hover:bg-slate-50">
+              <i class="fas fa-arrow-down-to-bracket"></i>
+            </button>
+            <button class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-600 text-xs shadow-sm hover:bg-slate-50">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Segmented Filter Tabs -->
+        <div class="bg-blue-50/70 p-1 rounded-xl flex items-center gap-1 border border-blue-100/60">
+          <button onclick="setTabFilter('all', this)" class="finance-tab flex-1 py-1.5 text-xs font-bold text-blue-600 bg-white shadow-sm rounded-lg transition">
+            Tất cả <span id="count-all">(0)</span>
+          </button>
+          <button onclick="setTabFilter('thu', this)" class="finance-tab flex-1 py-1.5 text-xs font-semibold text-slate-500 rounded-lg transition hover:text-slate-700">
+            Thu <span id="count-thu">(0)</span>
+          </button>
+          <button onclick="setTabFilter('chi', this)" class="finance-tab flex-1 py-1.5 text-xs font-semibold text-slate-500 rounded-lg transition hover:text-slate-700">
+            Chi <span id="count-chi">(0)</span>
+          </button>
+        </div>
+
+        <!-- Transaction List Container -->
+        <div id="finance-transactions-list"></div>
+
+        <!-- Security Logging Banner -->
+        <div class="bg-blue-50/60 border border-blue-100 rounded-xl p-3 flex items-center justify-between text-xs">
+          <div class="flex items-center gap-2 text-slate-700">
+            <i class="fas fa-shield-check text-blue-600 text-sm"></i>
+            <span class="font-medium">Mọi giao dịch được ghi log bảo mật</span>
+          </div>
+          <button onclick="showToast('Mở nhật ký bảo mật hệ thống', 'info')" class="text-blue-600 font-bold hover:underline">
+            Xem nhật ký
+          </button>
+        </div>
+
+      </div> <!-- End app-scroll-area -->
+
+    </div> <!-- End app-container -->
+  </div> <!-- End device-wrapper -->
+
+  <!-- Scripts -->
+  <script src="../js/common.js"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script type="module" src="../js/finance.js"></script>
+</body>
+</html>
+
