@@ -39,7 +39,7 @@ async function handleSaveInvoicePdf() {
     ]);
     if (invoiceError) throw invoiceError;
     if (itemsError) throw itemsError;
-    await window.downloadInvoicePdf(invoice, items || []);
+    window.downloadInvoicePdfFromServer(invoice.id);
     button.innerHTML = original;
   } catch (error) {
     console.error("Không thể tạo PDF hóa đơn:", error);

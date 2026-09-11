@@ -22,6 +22,16 @@ function pdfFilePart(value, fallback) {
   return normalized || fallback;
 }
 
+function downloadInvoicePdfFromServer(invoiceId) {
+  const link = document.createElement("a");
+  link.href = `/api/invoices/${encodeURIComponent(invoiceId)}/pdf`;
+  link.download = "";
+  link.style.display = "none";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+}
+
 async function downloadInvoicePdf(invoice, items) {
   if (typeof html2pdf !== "function") throw new Error("Chưa tải được thư viện tạo PDF.");
   const rows = items || [];
@@ -34,25 +44,29 @@ async function downloadInvoicePdf(invoice, items) {
   document.body.appendChild(wrapper);
   const filename = `Hoa-don-${pdfFilePart(invoice.invoice_number, invoice.id)}-${pdfFilePart(invoice.customer_name, "Khach-hang")}-${pdfFilePart(pdfDate(invoice.updated_at || invoice.created_at || invoice.invoice_date).replace(/\//g, "-"), "Chua-cap-nhat")}.pdf`;
   try {
-    const pdfBlob = await html2pdf().set({
+    const pdfDocument = await html2pdf().set({
       margin: 10,
       image: { type: "jpeg", quality: 1 },
       html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff", letterRendering: true },
       jsPDF: { unit: "mm", format: "a4", orientation: "landscape", compress: true },
       pagebreak: { mode: ["css", "legacy"], avoid: ["tr", ".pdf-totals"] }
-    }).from(wrapper).outputPdf("blob");
+    }).from(wrapper).toPdf().get("pdf");
+    if (!pdfDocument || typeof pdfDocument.save !== "function") throw new Error("Không lấy được tài liệu PDF.");
+    pdfDocument.save(filename);
+    const pdfBlob = pdfDocument.output("blob");
     const url = URL.createObjectURL(pdfBlob);
     const link = document.createElement("a");
     link.href = url;
     link.download = filename;
-    link.style.display = "none";
+    link.className = "invoice-pdf-fallback fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg";
+    link.textContent = "Tải lại PDF hóa đơn";
     document.body.appendChild(link);
     link.click();
-    link.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setTimeout(() => { link.remove(); URL.revokeObjectURL(url); }, 15000);
   } finally {
     wrapper.remove();
   }
 }
 
 window.downloadInvoicePdf = downloadInvoicePdf;
+window.downloadInvoicePdfFromServer = downloadInvoicePdfFromServer;
