@@ -75,8 +75,8 @@
         </div>
 
         <!-- Horizontal Member Filter Chips -->
-        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
-          <button onclick="setMemberFilter('all', this)" class="chip-btn bg-blue-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 flex-shrink-0 shadow-sm">
+        <!-- <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1"> -->
+          <!-- <button onclick="setMemberFilter('all', this)" class="chip-btn bg-blue-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 flex-shrink-0 shadow-sm">
             <i class="fas fa-users text-[11px]"></i>
             <span id="attendance-filter-all-label">Tất cả 2</span>
           </button>
@@ -87,7 +87,7 @@
           <button onclick="setMemberFilter('Khiêm', this)" class="chip-btn bg-white border border-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 flex-shrink-0 hover:bg-slate-50">
             <span class="w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 text-[9px] font-bold flex items-center justify-center">N2</span>
             <span>Khiêm</span>
-          </button>
+          </button> -->
           <!-- <button onclick="setMemberFilter('Người 3', this)" class="chip-btn bg-white border border-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 flex-shrink-0 hover:bg-slate-50">
             <span class="w-4 h-4 rounded-full bg-indigo-100 text-indigo-700 text-[9px] font-bold flex items-center justify-center">N3</span>
             <span>Người 3</span>
@@ -96,6 +96,20 @@
             <span class="w-4 h-4 rounded-full bg-orange-100 text-orange-700 text-[9px] font-bold flex items-center justify-center">N4</span>
             <span>Người 4</span>
           </button> -->
+        <!-- </div> -->
+         <!-- Report & Backup Utilities -->
+        <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-extrabold text-slate-700 uppercase tracking-wider">TIỆN ÍCH SAO LƯU & BÁO CÁO</span>
+            <i class="fas fa-cloud-arrow-down text-slate-400 text-sm"></i>
+          </div>
+
+          <div class="grid grid-cols-1 gap-3">
+            <button onclick="exportMonthlyWord()" class="py-3 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center gap-2 border border-blue-200 transition shadow-sm">
+              <i class="fas fa-file-word text-blue-600 text-sm"></i>
+              <span>Xuất Word</span>
+            </button>
+          </div>
         </div>
 <!-- Monthly Summary Card -->
         <div class="bg-blue-50/70 border border-blue-100 rounded-2xl p-4 shadow-sm">
@@ -185,20 +199,7 @@
           </div>
         </div> -->
 
-        <!-- Report & Backup Utilities -->
-        <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-xs font-extrabold text-slate-700 uppercase tracking-wider">TIỆN ÍCH SAO LƯU & BÁO CÁO</span>
-            <i class="fas fa-cloud-arrow-down text-slate-400 text-sm"></i>
-          </div>
-
-          <div class="grid grid-cols-1 gap-3">
-            <button onclick="exportMonthlyWord()" class="py-3 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center gap-2 border border-blue-200 transition shadow-sm">
-              <i class="fas fa-file-word text-blue-600 text-sm"></i>
-              <span>Xuất Word</span>
-            </button>
-          </div>
-        </div>
+        
 
       </div> <!-- End app-scroll-area -->
 
