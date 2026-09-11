@@ -40,10 +40,18 @@
         <div class="flex items-center justify-between gap-2">
           <div>
             <span class="text-[10px] text-slate-400 font-semibold block uppercase">Thời gian</span>
-            <button type="button" onclick="openAttendanceCalendar()" class="flex items-center gap-1.5 font-extrabold text-slate-800 text-base leading-tight">
-              <span id="attendance-month-label">Tháng hiện tại</span>
-              <i class="fas fa-chevron-down text-xs text-slate-400"></i>
-            </button>
+            <div class="flex items-center gap-1.5">
+              <button id="attendance-prev-month" type="button" class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs hover:bg-blue-100 transition">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              <button type="button" onclick="openAttendanceCalendar()" class="flex items-center gap-1.5 font-extrabold text-slate-800 text-base leading-tight">
+                <span id="attendance-month-label">Tháng hiện tại</span>
+                <i class="fas fa-chevron-down text-xs text-slate-400"></i>
+              </button>
+              <button id="attendance-next-month" type="button" class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs hover:bg-blue-100 transition">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
           </div>
 
           <a id="attendance-create-link" href="attendance-create.html" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2.5 px-4 rounded-xl flex items-center gap-1.5 shadow-sm transition">
@@ -70,7 +78,7 @@
         <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
           <button onclick="setMemberFilter('all', this)" class="chip-btn bg-blue-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 flex-shrink-0 shadow-sm">
             <i class="fas fa-users text-[11px]"></i>
-            <span>Tất cả 4</span>
+            <span id="attendance-filter-all-label">Tất cả 2</span>
           </button>
           <button onclick="setMemberFilter('Giới', this)" class="chip-btn bg-white border border-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 flex-shrink-0 hover:bg-slate-50">
             <span class="w-4 h-4 rounded-full bg-blue-100 text-blue-700 text-[9px] font-bold flex items-center justify-center">GK</span>
@@ -97,7 +105,7 @@
                 <i class="fas fa-chart-line"></i>
               </div>
               <div>
-                <h3 id="attendance-summary-title" class="font-bold text-slate-900 text-sm">Tổng kết tháng hiện tại</h3>
+                <h3 id="attendance-summary-title" class="font-bold text-slate-900 text-sm">THÁNG HIỆN TẠI</h3>
                 <p id="attendance-access-time" class="text-[10px] text-slate-500">Đang cập nhật thời gian truy cập...</p>
               </div>
             </div>

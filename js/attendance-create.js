@@ -74,6 +74,7 @@ async function loadEmployeesAndAttendance() {
       .from("employees")
       .select("*")
       .eq("active", true)
+      .in("name", ["Giới", "Khiêm"])
       .order("name");
     if (employeeError) throw employeeError;
 
