@@ -29,6 +29,32 @@ function clearStoredAuth() {
   sessionStorage.removeItem("app_user_phone");
 }
 
+async function handleLogout() {
+  console.log("[Auth] Logout started");
+
+  try {
+    const supabaseClient = window.supabase;
+    if (supabaseClient?.auth?.signOut) {
+      const { error } = await supabaseClient.auth.signOut();
+      if (error) throw error;
+    }
+
+    clearStoredAuth();
+    console.log("[Auth] Logout successful");
+
+    if (window.top && window.top !== window) {
+      window.top.location.href = "pages/login.html";
+    } else {
+      window.location.href = "login.html";
+    }
+  } catch (error) {
+    console.error("[Auth] Logout failed:", error);
+    alert(`Không thể đăng xuất: ${error?.message || "Lỗi không xác định"}`);
+  }
+}
+
+window.handleLogout = handleLogout;
+
 function isAuthValid(auth = getStoredAuth()) {
   if (!auth || auth.loggedIn !== true || !auth.loggedAt) {
     return false;
