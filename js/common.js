@@ -1,5 +1,65 @@
 /** Shared UI utilities and route protection. Supabase is the only data source. */
 
+const AUTH_STORAGE_KEY = "app_auth_session";
+const AUTH_TTL_MS = 10 * 60 * 1000;
+
+function getStoredAuth() {
+  try {
+    const rawValue = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (!rawValue) return null;
+    return JSON.parse(rawValue);
+  } catch (error) {
+    console.error("Unable to parse auth session:", error);
+    return null;
+  }
+}
+
+function setStoredAuth(phone) {
+  const payload = {
+    loggedIn: true,
+    loggedAt: Date.now(),
+    phone
+  };
+  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(payload));
+}
+
+function clearStoredAuth() {
+  localStorage.removeItem(AUTH_STORAGE_KEY);
+  sessionStorage.removeItem("app_logged_in");
+  sessionStorage.removeItem("app_user_phone");
+}
+
+function isAuthValid(auth = getStoredAuth()) {
+  if (!auth || auth.loggedIn !== true || !auth.loggedAt) {
+    return false;
+  }
+
+  const expiresAt = Number(auth.loggedAt) + AUTH_TTL_MS;
+  return Date.now() < expiresAt;
+}
+
+function scheduleAutoLogout() {
+  const auth = getStoredAuth();
+
+  if (!isAuthValid(auth)) {
+    clearStoredAuth();
+    return;
+  }
+
+  if (window.__appAuthTimer) {
+    clearTimeout(window.__appAuthTimer);
+  }
+
+  const remainingMs = Math.max(0, Number(auth.loggedAt) + AUTH_TTL_MS - Date.now());
+  window.__appAuthTimer = setTimeout(() => {
+    clearStoredAuth();
+    const currentPage = window.location.pathname.split("/").pop().toLowerCase();
+    if (currentPage !== "login.html") {
+      window.location.replace("login.html");
+    }
+  }, remainingMs + 50);
+}
+
 function formatCurrency(amount) {
   return new Intl.NumberFormat("vi-VN").format(Number(amount) || 0) + " đ";
 }
@@ -23,11 +83,22 @@ function showToast(message, type = "success") {
 document.addEventListener("DOMContentLoaded", async () => {
   const currentPage = window.location.pathname.split("/").pop().toLowerCase();
   const publicPages = ["", "index.html", "login.html"];
-  if (!publicPages.includes(currentPage) && sessionStorage.getItem("app_logged_in") !== "true") {
+
+  if (currentPage === "login.html") {
+    if (isAuthValid()) {
+      window.location.replace("home.html");
+      return;
+    }
+    return;
+  }
+
+  if (!publicPages.includes(currentPage) && !isAuthValid()) {
+    clearStoredAuth();
     window.location.replace("login.html");
     return;
   }
-  if (currentPage === "login.html") return;
+
+  scheduleAutoLogout();
 
   const appContainer = document.querySelector(".app-container");
   if (!appContainer || appContainer.querySelector(".bottom-nav")) return;
