@@ -31,6 +31,9 @@ function clearStoredAuth() {
 
 async function handleLogout() {
   console.log("[Auth] Logout started");
+  console.log("[Auth] Current URL:", window.location.href);
+  console.log("[Auth] Current pathname:", window.location.pathname);
+  console.log("[Auth] Is iframe:", window.self !== window.top);
 
   try {
     const supabaseClient = window.supabase;
@@ -42,10 +45,15 @@ async function handleLogout() {
     clearStoredAuth();
     console.log("[Auth] Logout successful");
 
+    const redirectTarget = "/";
+    console.log("[Auth] Redirecting to:", new URL(redirectTarget, window.location.origin).href);
+
     if (window.top && window.top !== window) {
-      window.top.location.href = "pages/login.html";
+      console.log("[Auth] Redirecting top window to app root:", redirectTarget);
+      window.top.location.href = redirectTarget;
     } else {
-      window.location.href = "login.html";
+      console.log("[Auth] Redirecting current window to app root:", redirectTarget);
+      window.location.href = redirectTarget;
     }
   } catch (error) {
     console.error("[Auth] Logout failed:", error);
@@ -81,7 +89,7 @@ function scheduleAutoLogout() {
     clearStoredAuth();
     const currentPage = window.location.pathname.split("/").pop().toLowerCase();
     if (currentPage !== "login.html") {
-      window.location.replace("login.html");
+      window.location.replace("/");
     }
   }, remainingMs + 50);
 }
@@ -112,7 +120,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (currentPage === "login.html") {
     if (isAuthValid()) {
-      window.location.replace("home.html");
+      window.location.replace("/pages/home.html");
       return;
     }
     return;
@@ -120,7 +128,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (!publicPages.includes(currentPage) && !isAuthValid()) {
     clearStoredAuth();
-    window.location.replace("login.html");
+    window.location.replace("/");
     return;
   }
 
