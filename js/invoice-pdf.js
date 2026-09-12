@@ -2,6 +2,27 @@ function pdfEscape(value) {
   return String(value ?? "").replace(/[&<>'"]/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[character]));
 }
 
+console.log("[Invoice Frame] isIframe:", window.self !== window.top);
+console.log("[Invoice Frame] frameElement:", window.frameElement);
+console.log("[Invoice Frame] sandbox:", window.frameElement?.getAttribute("sandbox"));
+console.log("[Invoice Frame] allow:", window.frameElement?.getAttribute("allow"));
+console.log("[Invoice Frame] parent URL:", document.referrer);
+
+window.debugInvoiceDownloadEnvironment = function debugInvoiceDownloadEnvironment() {
+  console.group("[Invoice Download Debug]");
+  console.log("URL:", window.location.href);
+  console.log("Hostname:", window.location.hostname);
+  console.log("Protocol:", window.location.protocol);
+  console.log("Is iframe:", window.self !== window.top);
+  console.log("Frame element:", window.frameElement);
+  console.log("Sandbox:", window.frameElement?.getAttribute("sandbox"));
+  console.log("Allow:", window.frameElement?.getAttribute("allow"));
+  console.log("Referrer:", document.referrer);
+  console.log("PDF library html2pdf:", typeof window.html2pdf);
+  console.log("PDF library jspdf:", typeof window.jspdf);
+  console.groupEnd();
+};
+
 function pdfMoney(value) {
   return new Intl.NumberFormat("vi-VN").format(Number(value) || 0) + " đ";
 }
