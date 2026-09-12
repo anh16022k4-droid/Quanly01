@@ -81,25 +81,79 @@ async function downloadInvoicePdf(invoice, items) {
     console.log("[Invoice PDF] Step 4 - Generate PDF document");
     const pdf = new window.jspdf.jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
     const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 12;
+    const contentWidth = pageWidth - margin * 2;
+
+    console.log("[Invoice PDF] Layout:", {
+      page: "A4 landscape",
+      orientation: "landscape",
+      margin: { left: margin, top: margin, right: margin, bottom: margin },
+      tableWidth: contentWidth,
+      availableWidth: contentWidth,
+      pageWidth,
+      pageHeight
+    });
+
+    const companyAddress = String(invoice.customer_address || "").trim();
+    const customerName = String(invoice.customer_name || "").trim();
+    const customerPhone = String(invoice.customer_phone || "").trim();
+    const description = String(invoice.description || "").trim();
+    const invoiceTitle = String(invoice.title || "Hóa đơn Thanh toán").trim() || "Hóa đơn Thanh toán";
+
+    pdf.setFont("times", "normal");
+    pdf.setTextColor(15, 23, 42);
+    pdf.setLineWidth(0.2);
+    pdf.setDrawColor(148, 163, 184);
 
     pdf.setFillColor(37, 99, 235);
-    pdf.rect(0, 0, pageWidth, 18, "F");
+    pdf.roundedRect(margin + 1, margin + 2, 8, 8, 1.2, 1.2, "F");
     pdf.setTextColor(255, 255, 255);
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(18);
-    pdf.text("HÓA ĐƠN", pageWidth / 2, 12, { align: "center" });
+    pdf.setFont("times", "bold");
+    pdf.setFontSize(9);
+    pdf.text("✓", margin + 5, margin + 7.5, { align: "center" });
 
     pdf.setTextColor(15, 23, 42);
-    pdf.setFontSize(11);
-    pdf.text(`Khách hàng: ${invoice.customer_name || ""}`, 14, 28);
-    pdf.text(`Địa chỉ: ${invoice.customer_address || ""}`, 14, 34);
-    pdf.text(`Số điện thoại: ${invoice.customer_phone || ""}`, 14, 40);
-    pdf.text(`Số hóa đơn: ${invoice.invoice_number || invoice.id}`, 14, 46);
-    pdf.text(`Ngày hóa đơn: ${pdfDate(invoice.invoice_date)}`, 14, 52);
+    pdf.setFont("times", "bold");
+    pdf.setFontSize(17);
+    pdf.text("HÓA ĐƠN", margin + 13, margin + 8);
 
-    if (invoice.description) {
-      pdf.setFontSize(10);
-      pdf.text(`Diễn giải: ${invoice.description}`, 14, 58);
+    pdf.setFont("times", "normal");
+    pdf.setFontSize(10);
+    pdf.text(companyAddress || "", margin + 13, margin + 13.5);
+
+    pdf.line(margin, margin + 18, pageWidth - margin, margin + 18);
+
+    pdf.setFont("times", "bold");
+    pdf.setFontSize(20);
+    pdf.text(invoiceTitle, pageWidth / 2, margin + 32, { align: "center" });
+    pdf.setFont("times", "normal");
+    pdf.setFontSize(11);
+    pdf.text(`${invoice.invoice_number || invoice.id} - ${pdfDate(invoice.invoice_date)}`, pageWidth / 2, margin + 39, { align: "center" });
+
+    const customerBoxY = margin + 46;
+    const customerBoxHeight = description ? 31 : 26;
+    pdf.setFillColor(248, 250, 252);
+    pdf.setDrawColor(203, 213, 225);
+    pdf.roundedRect(margin, customerBoxY, contentWidth, customerBoxHeight, 2.5, 2.5, "FD");
+
+    let customerLineY = customerBoxY + 8;
+    pdf.setFont("times", "bold");
+    pdf.setFontSize(10.5);
+    pdf.text("KHÁCH HÀNG:", margin + 5, customerLineY);
+    pdf.text("ĐỊA CHỈ:", margin + 5, customerLineY + 7);
+    pdf.text("SỐ ĐIỆN THOẠI:", margin + 5, customerLineY + 14);
+
+    pdf.setFont("times", "normal");
+    pdf.text(customerName || "", margin + 34, customerLineY, { maxWidth: contentWidth - 40 });
+    pdf.text(companyAddress || "", margin + 34, customerLineY + 7, { maxWidth: contentWidth - 40 });
+    pdf.text(customerPhone || "", margin + 34, customerLineY + 14, { maxWidth: contentWidth - 40 });
+
+    if (description) {
+      pdf.setFont("times", "bold");
+      pdf.text("DIỄN GIẢI:", margin + 5, customerLineY + 21);
+      pdf.setFont("times", "normal");
+      pdf.text(description, margin + 34, customerLineY + 21, { maxWidth: contentWidth - 40 });
     }
 
     const tableBody = rows.length
@@ -114,23 +168,60 @@ async function downloadInvoicePdf(invoice, items) {
         ])
       : [["", "Chưa có hạng mục", "", "", "", "", ""]];
 
+    const tableStartY = customerBoxY + customerBoxHeight + 8;
+    const finalY = pdf.lastAutoTable?.finalY || tableStartY;
+
     pdf.autoTable({
-      startY: rows.length ? 68 : 70,
+      startY: tableStartY,
       head: [["STT", "TÊN CÔNG VIỆC", "SL", "ĐƠN VỊ", "ĐƠN GIÁ", "THÀNH TIỀN", "GHI CHÚ"]],
       body: tableBody,
-      styles: { font: "helvetica", fontSize: 9, cellPadding: 2 },
-      headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: "bold" },
-      columnStyles: {
-        0: { cellWidth: 14 },
-        1: { cellWidth: 62 },
-        2: { cellWidth: 14 },
-        3: { cellWidth: 18 },
-        4: { cellWidth: 24 },
-        5: { cellWidth: 28 },
-        6: { cellWidth: 38 }
+      margin: { left: margin, right: margin },
+      tableWidth: contentWidth,
+      styles: {
+        font: "times",
+        fontStyle: "normal",
+        fontSize: 8.5,
+        cellPadding: 2.2,
+        lineColor: [203, 213, 225],
+        lineWidth: 0.2,
+        overflow: "linebreak",
+        valign: "middle"
+      },
+      headStyles: {
+        fillColor: [241, 245, 249],
+        textColor: [51, 65, 85],
+        fontStyle: "bold",
+        fontSize: 8.5,
+        halign: "center",
+        valign: "middle",
+        lineColor: [203, 213, 225],
+        lineWidth: 0.2
+      },
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        textColor: [15, 23, 42],
+        lineColor: [203, 213, 225],
+        lineWidth: 0.2
       },
       alternateRowStyles: { fillColor: [248, 250, 252] },
+      columnStyles: {
+        0: { cellWidth: 14, halign: "center" },
+        1: { cellWidth: 97, halign: "left" },
+        2: { cellWidth: 16, halign: "center" },
+        3: { cellWidth: 18, halign: "center" },
+        4: { cellWidth: 31, halign: "right" },
+        5: { cellWidth: 34, halign: "right" },
+        6: { cellWidth: 63, halign: "left" }
+      },
       didParseCell: hook => {
+        if (hook.section === "body") {
+          hook.cell.styles.fontSize = 8.5;
+          hook.cell.styles.textColor = [15, 23, 42];
+          if (hook.column.index === 0) hook.cell.styles.halign = "center";
+          if (hook.column.index === 1 || hook.column.index === 6) hook.cell.styles.halign = "left";
+          if (hook.column.index === 2 || hook.column.index === 3) hook.cell.styles.halign = "center";
+          if (hook.column.index === 4 || hook.column.index === 5) hook.cell.styles.halign = "right";
+        }
         if (hook.section === "body" && hook.row.index === tableBody.length - 1 && hook.column.index === 1 && !rows.length) {
           hook.cell.styles.textColor = [100, 116, 139];
           hook.cell.styles.fontStyle = "bold";
@@ -139,15 +230,30 @@ async function downloadInvoicePdf(invoice, items) {
       }
     });
 
-    const finalY = pdf.lastAutoTable?.finalY || 95;
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(11);
-    pdf.text(`TỔNG TIỀN HÀNG / DỊCH VỤ: ${pdfMoney(total)}`, 135, finalY + 12, { align: "right" });
-    pdf.setTextColor(220, 38, 38);
-    pdf.text(`KHOẢN ỨNG TRƯỚC: -${pdfMoney(advance)}`, 135, finalY + 20, { align: "right" });
+    const totalsY = (pdf.lastAutoTable?.finalY || finalY) + 8;
+
+    pdf.setDrawColor(203, 213, 225);
+    pdf.line(margin, totalsY, pageWidth - margin, totalsY);
+
+    pdf.setFont("times", "normal");
+    pdf.setFontSize(10.5);
     pdf.setTextColor(15, 23, 42);
-    pdf.setFontSize(12);
-    pdf.text(`CÒN PHẢI THANH TOÁN: ${pdfMoney(remaining)}`, 135, finalY + 30, { align: "right" });
+
+    pdf.text("TỔNG TIỀN HÀNG / DỊCH VỤ:", margin + 2, totalsY + 10);
+    pdf.text(pdfMoney(total), pageWidth - margin - 2, totalsY + 10, { align: "right" });
+
+    pdf.text("KHOẢN ỨNG TRƯỚC:", margin + 2, totalsY + 18);
+    pdf.setTextColor(220, 38, 38);
+    pdf.text(`-${pdfMoney(advance)}`, pageWidth - margin - 2, totalsY + 18, { align: "right" });
+
+    pdf.setTextColor(15, 23, 42);
+    pdf.setFillColor(37, 99, 235);
+    pdf.roundedRect(margin, totalsY + 28, contentWidth, 11, 1.5, 1.5, "F");
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFont("times", "bold");
+    pdf.setFontSize(11);
+    pdf.text("CÒN PHẢI THANH TOÁN:", margin + 4, totalsY + 36.5);
+    pdf.text(pdfMoney(remaining), pageWidth - margin - 4, totalsY + 36.5, { align: "right" });
 
     const filename = `Hoa-don-${pdfFilePart(invoice.invoice_number || invoice.id, invoice.id)}.pdf`;
 
