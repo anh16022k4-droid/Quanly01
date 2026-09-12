@@ -11,7 +11,7 @@ async function handleQuickSaveInvoice(id, button) {
     ]);
     if (invoiceError) throw invoiceError;
     if (itemsError) throw itemsError;
-    window.downloadInvoicePdfFromServer(invoice.id);
+    await window.downloadInvoicePdf(invoice, items);
     showToast("Đã tải PDF hóa đơn.", "success");
   } catch (error) {
     console.error("Không thể lưu nhanh hóa đơn:", error);
@@ -158,7 +158,7 @@ async function handleSaveInvoice() {
     ]);
     if (latestInvoiceError) throw latestInvoiceError;
     if (latestItemsError) throw latestItemsError;
-    window.downloadInvoicePdfFromServer(latestInvoice.id);
+    await window.downloadInvoicePdf(latestInvoice, latestItems || []);
     showToast("Đã lưu hóa đơn.", "success");
     setTimeout(() => { window.location.href = `invoice-detail.html?id=${encodeURIComponent(saved.id)}`; }, 700);
   } catch (error) { console.error("Không thể lưu hóa đơn:", error); showToast(`Không thể lưu hóa đơn: ${error.message || "Lỗi Supabase"}`, "error"); if (button) { button.disabled = false; button.innerHTML = button.dataset.originalText; } }
