@@ -8,7 +8,7 @@ let attendanceList = [];
 let selectedAttendanceDate = new URLSearchParams(window.location.search).get("date") || todayKey();
 let attendanceCalendarDate = parseLocalDateInput(selectedAttendanceDate);
 let selectedMonthDate = startOfMonthLocal(attendanceCalendarDate);
-const MAX_RECENT_DAYS = 7;
+const MAX_RECENT_DAYS = 3;
 const ACTIVE_ATTENDANCE_NAMES = ["Giới", "Khiêm"];
 
 const escapeHtml = value => String(value ?? "").replace(/[&<>'"]/g, character => ({
@@ -79,6 +79,7 @@ function renderAttendanceCalendar() {
 }
 
 function openAttendanceCalendar() {
+  console.log("[Attendance] Open date picker");
   attendanceCalendarDate = startOfMonthLocal(selectedMonthDate);
   document.getElementById("attendance-calendar-modal")?.classList.remove("modal-hidden");
   renderAttendanceCalendar();
@@ -100,7 +101,9 @@ function selectAttendanceToday() {
   attendanceCalendarDate = startOfMonthLocal(today);
   updateMonthHeading();
   closeAttendanceCalendar();
-  loadAttendanceData();
+  console.log("[Attendance] Selected date:", selectedAttendanceDate);
+  console.log("[Attendance] Opening attendance date:", selectedAttendanceDate);
+  window.location.href = `attendance-create.html?date=${encodeURIComponent(selectedAttendanceDate)}`;
 }
 
 async function selectAttendanceDate(date) {
@@ -111,17 +114,11 @@ async function selectAttendanceDate(date) {
   url.searchParams.set("date", date);
   window.history.replaceState({}, "", url);
   document.getElementById("attendance-month-label")?.replaceChildren(document.createTextNode(`Tháng ${formatMonthDisplay(selectedMonthDate)}`));
-  document.getElementById("attendance-create-link")?.setAttribute("href", `attendance-create.html?date=${encodeURIComponent(date)}`);
   closeAttendanceCalendar();
   renderAttendanceCalendar();
-  try {
-    await loadAttendanceData();
-    renderAttendancePage();
-  } catch (error) {
-    console.error("Không thể tải dữ liệu ngày chấm công:", error);
-    const container = document.getElementById("attendance-cards-list");
-    if (container) container.innerHTML = `<div class="text-center py-12 text-rose-500 text-sm">Không thể tải dữ liệu ngày đã chọn.</div>`;
-  }
+  console.log("[Attendance] Selected date:", selectedAttendanceDate);
+  console.log("[Attendance] Opening attendance date:", selectedAttendanceDate);
+  window.location.href = `attendance-create.html?date=${encodeURIComponent(date)}`;
 }
 
 function changeSummaryMonth(delta) {
@@ -161,6 +158,8 @@ async function loadAttendanceData() {
     return;
   }
 
+  console.log("[Attendance] Today:", todayKey());
+
   const [monthAttendanceResult, monthTransactionsResult] = await Promise.all([
     supabase
       .from("attendance")
@@ -197,7 +196,13 @@ async function loadAttendanceData() {
   const monthTransactions = monthTransactionsResult.data || [];
 
   const recentGroups = buildDailyGroups(monthRows, monthTransactions);
-  attendanceList = recentGroups.slice(0, MAX_RECENT_DAYS);
+  const todayRecords = recentGroups.filter(item => item.date === todayKey());
+  const recentRecords = recentGroups.filter(item => item.date !== todayKey()).slice(0, MAX_RECENT_DAYS);
+
+  console.log("[Attendance] Today records:", todayRecords);
+  console.log("[Attendance] Recent records:", recentRecords);
+
+  attendanceList = recentGroups;
   window.supabaseAttendanceList = attendanceList;
 
   const monthSummary = buildMonthSummary(monthRows, monthTransactions);
@@ -362,38 +367,14 @@ function updateMonthSummary(totalWork, totalIncome, totalExpense, perWorker) {
   }
 }
 
-function renderAttendancePage() {
-  const container = document.getElementById("attendance-cards-list");
-  if (!container) return;
-
-  let filtered = [...attendanceList];
-  const keyword = currentAttendanceSearch.trim().toLowerCase();
-
-  if (keyword) {
-    filtered = filtered.filter(item => {
-      const matchesDate = item.date.includes(keyword);
-      const matchesNote = (item.note || "").toLowerCase().includes(keyword);
-      const matchesWorker = item.workers.some(worker => worker.name.toLowerCase().includes(keyword));
-      return matchesDate || matchesNote || matchesWorker;
-    });
-  }
-
-  if (currentAttendanceFilter !== "all") {
-    filtered = filtered.filter(item => item.workers.some(worker => worker.name.includes(currentAttendanceFilter)));
-  }
-
-  if (!filtered.length) {
-    container.innerHTML = `<div class="text-center py-12 text-slate-400"><i class="fas fa-calendar-xmark text-4xl mb-3 text-slate-300"></i><p class="text-sm">Chưa có dữ liệu chấm công gần đây</p></div>`;
-    return;
-  }
-
-  container.innerHTML = filtered.map(item => `
+function renderAttendanceCard(item, isToday = false) {
+  return `
     <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.03)] mb-4 cursor-pointer" data-date="${escapeHtml(item.date)}" onclick="window.location.href='attendance-create.html?date=${encodeURIComponent(item.date)}'">
       <div class="flex items-center justify-between pb-2.5 border-b border-slate-100 mb-3">
         <div>
           <div class="flex items-center gap-2">
             <span class="font-bold text-slate-800 text-[15px]">${escapeHtml(formatDate(item.date))}</span>
-            ${item.dateLabel === "Hôm nay" ? '<span class="bg-blue-100 text-blue-700 text-[11px] font-semibold px-2 py-0.5 rounded-full">Hôm nay</span>' : ""}
+            ${isToday ? '<span class="bg-blue-100 text-blue-700 text-[11px] font-semibold px-2 py-0.5 rounded-full">Hôm nay</span>' : ""}
           </div>
         </div>
         <div class="bg-blue-50 text-blue-600 text-xs font-bold px-3 py-1.5 rounded-full border border-blue-100">${item.totalCong.toFixed(1)} công</div>
@@ -433,7 +414,96 @@ function renderAttendancePage() {
         </a>
       </div>
     </div>
-  `).join("");
+  `;
+}
+
+function renderEmptyTodayCard(date) {
+  return `
+    <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.03)] mb-4">
+      <div class="flex items-center justify-between pb-2.5 border-b border-slate-100 mb-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-slate-800 text-[15px]">${escapeHtml(formatDate(date))}</span>
+            <span class="bg-blue-100 text-blue-700 text-[11px] font-semibold px-2 py-0.5 rounded-full">Hôm nay</span>
+          </div>
+        </div>
+        <div class="bg-blue-50 text-blue-600 text-xs font-bold px-3 py-1.5 rounded-full border border-blue-100">0.0 công</div>
+      </div>
+      <div class="bg-slate-50/70 rounded-xl p-3 mb-3 space-y-2.5">
+        <div class="text-xs text-slate-500 italic">Chưa có dữ liệu chấm công cho ngày hôm nay.</div>
+      </div>
+      <div class="grid grid-cols-2 gap-2 mb-3">
+        <div class="bg-emerald-50/60 rounded-xl p-2.5 border border-emerald-100">
+          <div class="text-[10px] text-emerald-700 font-medium">Tiền Thu</div>
+          <div class="text-xs font-bold text-emerald-700">+0 đ</div>
+        </div>
+        <div class="bg-rose-50/60 rounded-xl p-2.5 border border-rose-100">
+          <div class="text-[10px] text-rose-700 font-medium">Tiền Chi</div>
+          <div class="text-xs font-bold text-rose-700">-0 đ</div>
+        </div>
+      </div>
+      <div class="bg-slate-50 rounded-xl p-2.5 text-xs text-slate-600 flex items-start gap-2 mb-3">
+        <i class="fas fa-location-dot text-blue-500 text-xs mt-0.5"></i>
+        <span>Chưa có ghi chú</span>
+      </div>
+      <div class="flex items-center justify-end gap-2 pt-1 border-t border-slate-100">
+        <a href="attendance-create.html?date=${encodeURIComponent(date)}" class="px-3 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-semibold flex items-center gap-1.5 transition">
+          <i class="fas fa-pen text-blue-500"></i> Chấm công
+        </a>
+      </div>
+    </div>
+  `;
+}
+
+function renderAttendancePage() {
+  const container = document.getElementById("attendance-cards-list");
+  if (!container) return;
+
+  let filtered = [...attendanceList];
+  const keyword = currentAttendanceSearch.trim().toLowerCase();
+
+  if (keyword) {
+    filtered = filtered.filter(item => {
+      const matchesDate = item.date.includes(keyword);
+      const matchesNote = (item.note || "").toLowerCase().includes(keyword);
+      const matchesWorker = item.workers.some(worker => worker.name.toLowerCase().includes(keyword));
+      return matchesDate || matchesNote || matchesWorker;
+    });
+  }
+
+  if (currentAttendanceFilter !== "all") {
+    filtered = filtered.filter(item => item.workers.some(worker => worker.name.includes(currentAttendanceFilter)));
+  }
+
+  const todayDateKey = todayKey();
+  const todayEntry = filtered.find(item => item.date === todayDateKey);
+  const recentEntries = filtered.filter(item => item.date !== todayDateKey).slice(0, MAX_RECENT_DAYS);
+
+  const todayHtml = todayEntry ? renderAttendanceCard(todayEntry, true) : renderEmptyTodayCard(todayDateKey);
+  const recentHtml = recentEntries.length
+    ? recentEntries.map(item => renderAttendanceCard(item, false)).join("")
+    : `<div class="text-center py-8 text-slate-400"><i class="fas fa-calendar-xmark text-4xl mb-3 text-slate-300"></i><p class="text-sm">Chưa có dữ liệu chấm công gần đây</p></div>`;
+
+  const panelTitle = `
+    <div class="mb-3">
+      <h3 class="text-[11px] font-extrabold text-slate-700 uppercase tracking-wider">Chấm công hôm nay</h3>
+    </div>
+  `;
+
+  const recentTitle = `
+    <div class="mb-3 mt-1">
+      <h3 class="text-[11px] font-extrabold text-slate-700 uppercase tracking-wider">Chấm công gần đây</h3>
+    </div>
+  `;
+
+  container.innerHTML = `
+    <div class="space-y-4">
+      ${panelTitle}
+      ${todayHtml}
+      ${recentTitle}
+      ${recentHtml}
+    </div>
+  `;
 }
 
 window.setAttendanceFilter = filter => {
