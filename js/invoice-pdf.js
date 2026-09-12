@@ -43,6 +43,64 @@ function pdfFilePart(value, fallback) {
   return normalized || fallback;
 }
 
+function arrayBufferToBase64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  const chunkSize = 0x8000;
+
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+  }
+
+  return btoa(binary);
+}
+
+async function loadPdfFonts(pdf) {
+  const fontConfigs = [
+    {
+      vfsName: "TimesNewRoman-Regular.ttf",
+      familyName: "TimesNewRoman",
+      style: "normal",
+      path: new URL("../fonts/times-new-roman.ttf", window.location.href).href
+    },
+    {
+      vfsName: "TimesNewRoman-Bold.ttf",
+      familyName: "TimesNewRoman",
+      style: "bold",
+      path: new URL("../fonts/times-new-roman-bold.ttf", window.location.href).href
+    }
+  ];
+
+  for (const fontConfig of fontConfigs) {
+    try {
+      const response = await fetch(fontConfig.path);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const arrayBuffer = await response.arrayBuffer();
+      const base64 = arrayBufferToBase64(arrayBuffer);
+      pdf.addFileToVFS(fontConfig.vfsName, base64);
+      pdf.addFont(fontConfig.vfsName, fontConfig.familyName, fontConfig.style);
+    } catch (error) {
+      console.error("[Invoice PDF] Times New Roman font failed to load", {
+        path: fontConfig.path,
+        message: error?.message,
+        error
+      });
+      throw error;
+    }
+  }
+
+  console.log("[Invoice PDF] Font loaded", {
+    family: "Times New Roman",
+    regularLoaded: true,
+    boldLoaded: true,
+    unicode: true,
+    registeredFonts: fontConfigs.map(fontConfig => `${fontConfig.familyName}/${fontConfig.style}`)
+  });
+}
+
 async function downloadInvoicePdf(invoice, items) {
   console.log("[Invoice PDF] Start", { invoiceId: invoice?.id, itemsCount: Array.isArray(items) ? items.length : 0 });
   console.log("[Invoice PDF] Environment", {
@@ -80,6 +138,10 @@ async function downloadInvoicePdf(invoice, items) {
 
     console.log("[Invoice PDF] Step 4 - Generate PDF document");
     const pdf = new window.jspdf.jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+
+    console.log("[Invoice PDF] Step 4.1 - Register embedded font");
+    await loadPdfFonts(pdf);
+
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
     const margin = 12;
@@ -92,7 +154,9 @@ async function downloadInvoicePdf(invoice, items) {
       tableWidth: contentWidth,
       availableWidth: contentWidth,
       pageWidth,
-      pageHeight
+      pageHeight,
+      fontFamily: "Times New Roman",
+      unicode: true
     });
 
     const companyAddress = String(invoice.customer_address || "").trim();
@@ -101,7 +165,7 @@ async function downloadInvoicePdf(invoice, items) {
     const description = String(invoice.description || "").trim();
     const invoiceTitle = String(invoice.title || "Hóa đơn Thanh toán").trim() || "Hóa đơn Thanh toán";
 
-    pdf.setFont("times", "normal");
+    pdf.setFont("TimesNewRoman", "normal");
     pdf.setTextColor(15, 23, 42);
     pdf.setLineWidth(0.2);
     pdf.setDrawColor(148, 163, 184);
@@ -109,25 +173,25 @@ async function downloadInvoicePdf(invoice, items) {
     pdf.setFillColor(37, 99, 235);
     pdf.roundedRect(margin + 1, margin + 2, 8, 8, 1.2, 1.2, "F");
     pdf.setTextColor(255, 255, 255);
-    pdf.setFont("times", "bold");
+    pdf.setFont("TimesNewRoman", "bold");
     pdf.setFontSize(9);
     pdf.text("✓", margin + 5, margin + 7.5, { align: "center" });
 
     pdf.setTextColor(15, 23, 42);
-    pdf.setFont("times", "bold");
+    pdf.setFont("TimesNewRoman", "bold");
     pdf.setFontSize(17);
     pdf.text("HÓA ĐƠN", margin + 13, margin + 8);
 
-    pdf.setFont("times", "normal");
+    pdf.setFont("TimesNewRoman", "normal");
     pdf.setFontSize(10);
     pdf.text(companyAddress || "", margin + 13, margin + 13.5);
 
     pdf.line(margin, margin + 18, pageWidth - margin, margin + 18);
 
-    pdf.setFont("times", "bold");
+    pdf.setFont("TimesNewRoman", "bold");
     pdf.setFontSize(20);
     pdf.text(invoiceTitle, pageWidth / 2, margin + 32, { align: "center" });
-    pdf.setFont("times", "normal");
+    pdf.setFont("TimesNewRoman", "normal");
     pdf.setFontSize(11);
     pdf.text(`${invoice.invoice_number || invoice.id} - ${pdfDate(invoice.invoice_date)}`, pageWidth / 2, margin + 39, { align: "center" });
 
@@ -138,21 +202,21 @@ async function downloadInvoicePdf(invoice, items) {
     pdf.roundedRect(margin, customerBoxY, contentWidth, customerBoxHeight, 2.5, 2.5, "FD");
 
     let customerLineY = customerBoxY + 8;
-    pdf.setFont("times", "bold");
+    pdf.setFont("TimesNewRoman", "bold");
     pdf.setFontSize(10.5);
     pdf.text("KHÁCH HÀNG:", margin + 5, customerLineY);
     pdf.text("ĐỊA CHỈ:", margin + 5, customerLineY + 7);
     pdf.text("SỐ ĐIỆN THOẠI:", margin + 5, customerLineY + 14);
 
-    pdf.setFont("times", "normal");
+    pdf.setFont("TimesNewRoman", "normal");
     pdf.text(customerName || "", margin + 34, customerLineY, { maxWidth: contentWidth - 40 });
     pdf.text(companyAddress || "", margin + 34, customerLineY + 7, { maxWidth: contentWidth - 40 });
     pdf.text(customerPhone || "", margin + 34, customerLineY + 14, { maxWidth: contentWidth - 40 });
 
     if (description) {
-      pdf.setFont("times", "bold");
+      pdf.setFont("TimesNewRoman", "bold");
       pdf.text("DIỄN GIẢI:", margin + 5, customerLineY + 21);
-      pdf.setFont("times", "normal");
+      pdf.setFont("TimesNewRoman", "normal");
       pdf.text(description, margin + 34, customerLineY + 21, { maxWidth: contentWidth - 40 });
     }
 
@@ -171,6 +235,23 @@ async function downloadInvoicePdf(invoice, items) {
     const tableStartY = customerBoxY + customerBoxHeight + 8;
     const finalY = pdf.lastAutoTable?.finalY || tableStartY;
 
+    const tableColumnWidths = [14, 97, 16, 18, 31, 34, 63];
+    const tableWidthsTotal = tableColumnWidths.reduce((sum, width) => sum + width, 0);
+    if (tableWidthsTotal > contentWidth) {
+      console.error("[Invoice PDF] Table exceeds available page width", {
+        availableWidth: contentWidth,
+        tableWidthsTotal,
+        columnWidths: tableColumnWidths
+      });
+      throw new Error("Bảng PDF vượt quá chiều rộng trang có sẵn.");
+    }
+
+    console.log("[Invoice PDF] Table width", {
+      availableWidth: contentWidth,
+      tableWidthsTotal,
+      columnWidths: tableColumnWidths
+    });
+
     pdf.autoTable({
       startY: tableStartY,
       head: [["STT", "TÊN CÔNG VIỆC", "SL", "ĐƠN VỊ", "ĐƠN GIÁ", "THÀNH TIỀN", "GHI CHÚ"]],
@@ -178,7 +259,7 @@ async function downloadInvoicePdf(invoice, items) {
       margin: { left: margin, right: margin },
       tableWidth: contentWidth,
       styles: {
-        font: "times",
+        font: "TimesNewRoman",
         fontStyle: "normal",
         fontSize: 8.5,
         cellPadding: 2.2,
@@ -190,6 +271,7 @@ async function downloadInvoicePdf(invoice, items) {
       headStyles: {
         fillColor: [241, 245, 249],
         textColor: [51, 65, 85],
+        font: "TimesNewRoman",
         fontStyle: "bold",
         fontSize: 8.5,
         halign: "center",
@@ -200,6 +282,7 @@ async function downloadInvoicePdf(invoice, items) {
       bodyStyles: {
         fillColor: [255, 255, 255],
         textColor: [15, 23, 42],
+        font: "TimesNewRoman",
         lineColor: [203, 213, 225],
         lineWidth: 0.2
       },
@@ -235,7 +318,7 @@ async function downloadInvoicePdf(invoice, items) {
     pdf.setDrawColor(203, 213, 225);
     pdf.line(margin, totalsY, pageWidth - margin, totalsY);
 
-    pdf.setFont("times", "normal");
+    pdf.setFont("TimesNewRoman", "normal");
     pdf.setFontSize(10.5);
     pdf.setTextColor(15, 23, 42);
 
@@ -250,7 +333,7 @@ async function downloadInvoicePdf(invoice, items) {
     pdf.setFillColor(37, 99, 235);
     pdf.roundedRect(margin, totalsY + 28, contentWidth, 11, 1.5, 1.5, "F");
     pdf.setTextColor(255, 255, 255);
-    pdf.setFont("times", "bold");
+    pdf.setFont("TimesNewRoman", "bold");
     pdf.setFontSize(11);
     pdf.text("CÒN PHẢI THANH TOÁN:", margin + 4, totalsY + 36.5);
     pdf.text(pdfMoney(remaining), pageWidth - margin - 4, totalsY + 36.5, { align: "right" });
