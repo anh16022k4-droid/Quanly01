@@ -99,6 +99,9 @@ body {
 .app-scroll-area {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
   padding-bottom: calc(var(--bottom-nav-space) + env(safe-area-inset-bottom)) !important;
   scroll-behavior: smooth;
 }
@@ -138,6 +141,7 @@ body {
   z-index: 40;
   min-height: var(--bottom-nav-height);
   padding-bottom: max(10px, env(safe-area-inset-bottom));
+  overscroll-behavior: contain;
 }
 
 /* Keep page actions visible above the fixed bottom navigation. */
